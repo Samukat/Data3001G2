@@ -5,16 +5,19 @@ from cleaning_functions import remove_other_tracks, remove_na, car_edge_distance
 from functions import load_race_data, load_entire_track, filter_by_distance
 
 
-def build_dataset():
+def build_dataset(df: pd.DataFrame = None) -> pd.DataFrame:
+
     # Load data
     print("1. Loading Data")
-    data = load_race_data("UNSW F12024.csv")
+    if df == None:
+        data = load_race_data("UNSW F12024.csv")
+
     track_left, track_right, _, turns = load_entire_track()
 
     # Race data filtering
     print("2. Filtering")
-    data = remove_other_tracks(data)
     data = filter_by_distance(data)
+    data = remove_other_tracks(data)
     data = remove_na(data, subset=['M_WORLDPOSITIONX_1', "M_WORLDPOSITIONY_1"])
 
     # Track Width

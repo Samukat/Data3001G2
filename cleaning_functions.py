@@ -8,7 +8,7 @@ def remove_other_tracks(data: pd.DataFrame) -> pd.DataFrame:
     """
     Removes all rows from the dataframe where the TRACKID is not 1.
     """
-    return data[data['TRACKID'] == 0].reset_index(drop=True)
+    return data[data['M_TRACKID'] == 0].reset_index(drop=True)
 
 
 def remove_na(data: pd.DataFrame, subset) -> pd.DataFrame:
