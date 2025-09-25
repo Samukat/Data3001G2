@@ -1,14 +1,30 @@
 import pandas as pd
-from cleaning_functions import remove_other_tracks, filter_by_distance
+import os
 
-track_left = pd.read_csv("data/f1sim-ref-left.csv")
-track_right = pd.read_csv("data/f1sim-ref-right.csv")
-track_line = pd.read_csv("data/f1sim-ref-line.csv")
-turns = pd.read_csv("data/f1sim-ref-turns.csv")
+from cleaning_functions import remove_other_tracks, remove_na, car_edge_distances, calculate_track_width
+from functions import load_race_data, load_entire_track, filter_by_distance
 
 
-data = pd.read_csv("data/f1sim-2022-2023.csv")
+def build_dataset():
+    # Load data
+    print("1. Loading Data")
+    data = load_race_data("UNSW F12024.csv")
+    track_left, track_right, _, turns = load_entire_track()
 
-data = remove_other_tracks(data)
-data = filter_by_distance(data, 1200)
-data = remove_na(data, subset=['M_WORLDPOSITIONX_1', "M_WORLDPOSITIONY_1"])
+    # Race data filtering
+    print("2. Filtering")
+    data = remove_other_tracks(data)
+    data = filter_by_distance(data)
+    data = remove_na(data, subset=['M_WORLDPOSITIONX_1', "M_WORLDPOSITIONY_1"])
+
+    # Track Width
+    print("3. Track width")
+    left_with_width, right_with_width = calculate_track_width(track_left.sort_values(
+        by="FRAME").reset_index(), track_right.sort_values(by="FRAME").reset_index())
+
+    # result_df = car_edge_distances(run_data_filtered, left_with_width, right_with_width)
+
+
+if __name__ == "__main__":
+    dataset = build_dataset()
+    # Todo: Save dataset
