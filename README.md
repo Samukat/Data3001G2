@@ -31,7 +31,7 @@ Data sources include:
 
 ### 2.2 Data Description  
 
-The goal of the final data product is to construct a dataset that captures the distinguishing features of driver performance through a cleaned variant of the original telemetry, enhanced with feature-engineered variables. These features will allow us to redefine the optimal racing line (and associated trigger points) that minimizes time over the sampled portion of the track (ending after Turn 3). The dataset will be designed so that a typical driver can follow this optimized line (changing braking, acceleration and steering upon a set of placed triggers) to achieve maximum speed through the first three turns.
+The goal of the final data product is to construct a dataset that captures the distinguishing features of driver performance through a cleaned variant of the original dataset, enhanced with feature-engineered variables. These features will allow us to redefine the optimal racing line (and associated trigger points) that minimizes time over the sampled portion of the track (ending after Turn 3). The dataset will be designed so that a typical driver can follow this optimized line (changing braking, acceleration and steering upon a set of placed triggers) to achieve maximum speed through the first three turns.
 
 Important dataset features are listed below:  
 
@@ -187,6 +187,7 @@ For questions or suggestions, contact:
   - Remove irrelevant tracks  
   - Remove NaNs in car coordinates  
   - Filter slower drivers (>75th percentile until Turn 3)  
+
 
 
 
