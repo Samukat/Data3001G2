@@ -31,7 +31,9 @@ Data sources include:
 
 ### 2.2 Data Description  
 
-We plan to construct a dataset containing:  
+The goal of the final data product is to construct a dataset that captures the distinguishing features of driver performance through a cleaned variant of the original telemetry, enhanced with feature-engineered variables. These features will allow us to redefine the optimal racing line (and associated trigger points) that minimizes time over the sampled portion of the track (ending after Turn 3). The dataset will be designed so that a typical driver can follow this optimized line (changing braking, acceleration and steering upon a set of placed triggers) to achieve maximum speed through the first three turns.
+
+Important dataset features are listed below:  
 
 - **Observations (rows):** vehicle performance at each frame/step of the lap  
 - **Features (columns):** speed, throttle, steering, braking, gear, RPM, world position, lap times, sector times, etc.  
@@ -46,8 +48,6 @@ The workflow for this project:
 ## Workflow  
 
 ### Data acquisition  
-
-The goal of the final data product is to construct a dataset that captures the distinguishing features of driver performance through a cleaned variant of the original telemetry, enhanced with feature-engineered variables. These features will allow us to redefine the optimal racing line (and associated trigger points) that minimizes time over the sampled portion of the track (ending after Turn 3). The dataset will be designed so that a typical driver can follow this optimized line (changing braking, acceleration and steering upon a set of placed triggers) to achieve maximum speed through the first three turns.
 
 We began by ingesting multiple reference raw datasets that describe the Albert Park circuit:
 
@@ -187,5 +187,6 @@ For questions or suggestions, contact:
   - Remove irrelevant tracks  
   - Remove NaNs in car coordinates  
   - Filter slower drivers (>75th percentile until Turn 3)  
+
 
 
