@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-from cleaning_functions import remove_other_tracks, remove_na, car_edge_distances, calculate_track_width
+from cleaning_functions import remove_other_tracks, remove_na, car_edge_distances, calculate_track_width, renaming_cols
 from functions import load_race_data, load_entire_track, filter_by_distance
 
 
@@ -26,6 +26,9 @@ def build_dataset(df: pd.DataFrame = None) -> pd.DataFrame:
         by="FRAME").reset_index(), track_right.sort_values(by="FRAME").reset_index())
 
     # result_df = car_edge_distances(run_data_filtered, left_with_width, right_with_width)
+
+    # Rename columns
+    # data = renaming_cols(data)
 
 
 if __name__ == "__main__":
