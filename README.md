@@ -157,7 +157,7 @@ Future work may include:
 
 - **Data Transformation:** Charlotte Fang Hendro, Christian Joel, Eric Kim, Muhammad Ijaz, Samuel Katz  
 - **Data Source:** Oracle – Stuart Coggins  
-- **Guidance & Education:** _Tutor name TBD_  
+- **Guidance & Education:** Dr Jacob Stoklasa  
 
 If you’d like to contribute:  
 
@@ -188,6 +188,7 @@ For questions or suggestions, contact:
   - Remove irrelevant tracks  
   - Remove NaNs in car coordinates  
   - Filter slower drivers (>75th percentile until Turn 3)  
+
 
 
 
