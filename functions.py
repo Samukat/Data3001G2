@@ -22,11 +22,9 @@ RELEVANT_COLS = [
 
 ]
 
+
+# Auto removing prefix "_M" and suffix "_1"
 RENAME_COLS = {
-    "M_WORLDPOSITIONX_1": "WORLDPOSX",
-    "M_WORLDPOSITIONY_1": "WORLDPOSY",
-    "M_WORLDPOSITIONZ_1": "WORLDPOSZ",
-    "M_LAPDISTANCE_1": "LAPDISTANCE"
 }
 
 
@@ -45,8 +43,10 @@ def load_entire_track():
 
 def load_race_data(file_name):
     data = pd.read_csv(os.path.join(DATA_FOLDER, file_name))
-    data = data[RELEVANT_COLS].rename(columns=RENAME_COLS)
-    return data
+    data = data[RELEVANT_COLS]
+    data.columns = [col.replace("_M", "").replace("_1", "")
+                    for col in data.columns]
+    return data.rename(columns=RENAME_COLS)
 
 
 def filter_by_distance(data: pd.DataFrame) -> pd.DataFrame:
