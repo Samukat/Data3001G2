@@ -79,7 +79,7 @@ Finally, we performed checks to handle missing values in the dataset, primarily 
 
 Futher laps were removed as dicussed in the _Removing unsuitable laps_ section.
 
-### Track visualisation  
+### 3.3. Track visualisation  
 
 To verify the data and provide context for later analysis, we reconstructed the circuit by plotting the left and right boundaries alongside the refrence racing line. Apex points were overlaid, and corners were annotated. We then produced zoomed-in visualisations of Turns 1 and 2, since these form the core section of interest.  
 
@@ -89,12 +89,12 @@ To verify the data and provide context for later analysis, we reconstructed the 
 
 Should we add the sample turns?
 
-### Removing unsuitable laps
+### 3.4. Removing unsuitable laps
 
 - Removing rows with less than N (to be determined) data points so features could be constructed cleanly
 - Removing laps where lap max distance between points become too great -> inaccuracy
 
-### Feature engineering  
+### 3.5. Feature engineering  
 
 #### Track Width
 
