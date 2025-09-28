@@ -8,7 +8,7 @@
 
 Performances in motorsports are dictated by a range of key factors regarding the braking, turning and throttle of the vehicle, where each plays a critical role in determining the final lap time. Often shaped by the split-second decisions made by drivers at specific sections of the track, turns are one such crucial point as they present opportunities for overtaking. As even microsecond differences can dictate differences in these outcomes, minimising the time required to pass through these zones becomes essential, especially in competitive contexts such as Formula One races.
 
-Previous research on optimal driving strategies has often relied on simple simulations or narrow datasets. In this project, we analyse a **Formula One simulation** with a high-resolution dataset capturing vehicle behaviour through Turns 1 and 2 at the Melbourne Albert Park circuit. Our primary aim is to determine the optimum behavioural car conditions (i.e. braking, throttle, steering) at which the vehicle exits Turn 2, based on the time to reach a fixed distance point.
+Previous research on optimal driving strategies has often relied on simple simulations or narrow datasets. In this project, we analyse a **Formula One simulation** with a high-resolution dataset capturing vehicle behaviour through Turns 1 and 2 at the Melbourne Albert Park circuit. Our primary aim is to determine the optimum behavioural car conditions (i.e. braking, throttle, steering) at which the vehicle exits Turn 2, based on the time to reach a fixed distance point marginally further down the track (900m).
 
 The setup involves acquiring multiple reference datasets describing the race circuit and lap performance. The proposed final dataframe integrates these into engineered lap-level features, capturing key performance indicators (braking point, throttle point, etc) alongside aggregated measures (e.g. total throttle applied within defined segments) to further complement the evaluation of performances. These tasks highlight a significant initial step in bridging the gap between model driven optimisation and real world telemetry analysis in the modern motorsport landscape.
 
@@ -32,15 +32,19 @@ Data sources include:
 
 #### 2.2.1 Final Data Product Description
 
-The final data product is a lap-level dataset, with each row representing a single lap attempted by a driver (~500–1000 rows total). Features summarise key aspects of lap execution (e.g. braking, throttle, steering, speed, and segment-based performance), aligned to track geometry and specific race segments. The dataset is designed to capture both overall lap characteristics and driver–track interactions, with the target variable being lap time (or sector time for the focus region of Turns 1–3).
+The final data product is a lap-level dataset, with each row representing a single lap attempted by a driver (~500–1000 rows total). Features summarise key aspects of lap execution (e.g. braking, throttle, steering, speed, and segment-based performance), aligned to track geometry and specific race segments. The dataset is designed to capture both overall lap characteristics and driver–track interactions, with the target variable being lap time.
 
 - **Observations (rows):** one per lap, across all drivers (~500–1000 total)
 - **Features (columns):** engineered summaries of braking, throttle, steering, speed, and sector performance
 - **Target variable:** lap time at a point, 900m (See section 3.5.3)
 - **Usage:** compare driver performance, model lap outcomes, and evaluate optimal racing strategies
 
-*(TBA - TABLE OF FEATURES)*
-The final feature set was informed by exploratory data analysis, literature review, and domain expertise provided by Stuart.
+*(TBA – Table of Features)*
+The final feature set was developed through a combination of exploratory data analysis, insights from the literature, and domain expertise provided by Stuart.
+Representative examples include:
+- **Angle and distance to apex** (already implemented)
+- **Braking, throttle, and steering points** (both first instance and averages)
+- **Car characteristics at turns**, such as DRS status, RPM, and steering angle (used to approximate downforce)
 
 ---
 
@@ -71,8 +75,9 @@ The incoming telemetry contains frame-level observations of driver and vehicle s
 ### 2.3 Assumptions  
 
 - **Baseline assumptions:** derived from client consultation (Stuart, Oracle)
-  - The first measured lap is a flying lap, meaning that the car crosses the start/finish line already at racing speed. Data collection begins at ≈0 m with the car already moving, not from a standing start
-  - Current **f1sim-ref-line** ideal racing line is not indicative of fastest possible route for each driver (Stuart)  
+  - Flying Lap Start: The first measured lap in the telemetry is assumed to be a flying lap. Data collection begins with the vehicle already moving ( $\approx$ 0 m lap distance) and at racing speed, not from a standing start or pit exit.
+  - Reference Line Validity: The provided f1sim-ref-line ideal racing line is not taken as the fastest possible route for every driver, but rather as a geometric reference (as advised by Stuart, Oracle).
+
 - **Data cleaning assumptions:**  
   - Remove irrelevant tracks  
   - Remove NaNs in car coordinates  
@@ -102,11 +107,11 @@ We began by cleaning the data, first removing unnecessary columns and renaming t
 |:--:|
 | *Figure 1. Number of data points per track, with approximate track ID layouts.* |
 
-We therefore removed all data from tracks other than Albert Park, and further excluded datapoints beyond Turn 3, since our focus is on Turns 1 and 2 and the overtaking section between Turns 2 and 3. This was done by filtering for laps with a current lap distance below 1200m.  
+We therefore removed all data from tracks other than Albert Park, and further excluded datapoints beyond Turn 3, since our focus is on Turns 1 and 2 and the overtaking section between Turns 2 and 3. This was done by filtering for laps with a current lap distance below 1200m. Note that this distance exceeds the target lap point of 900m, allowing us to conduct both exploratory data analysis (EDA) to determine why 900m was optimal, as well as perform linear interpolation around this point.
 
 Finally, we performed checks to handle missing values in the dataset, primarily for the car position variables. Rows with missing coordinates totaled around 68,000
 
-Futher laps were removed as dicussed in the *Removing unsuitable laps* section.
+Further laps were removed as dicussed in the *Removing unsuitable laps* section.
 
 ### 3.3. Track visualisation  
 
@@ -172,7 +177,8 @@ Our next step is to evaluate driver performance through Turns 1–3, comparing h
 
 - Interpreted dataset structure  
 - Visualized variables and circuit geometry  
-- Cleaned data (removed off-track laps, NaNs, and slowest drivers)  
+- Cleaned data (removed off-track laps, NaNs, and other filtering)
+- Constructed some basic filters (e.g. angle and distance to apex)  
 
 ### 4.3 Next Steps  
 
@@ -192,7 +198,6 @@ This product is intended for:
 
 Future work may include:  
 
-- Adding derived features (e.g., braking zones, acceleration windows)  
 - Integrating external racing telemetry datasets  
 - Building interactive simulations  
 
@@ -224,12 +229,3 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
-
-
-
-
-
-
-
-
-
