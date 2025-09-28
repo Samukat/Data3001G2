@@ -1,17 +1,18 @@
 ﻿# ApexRacing
 
+A data-driven analysis of telemetry-based performance in F1 simulation racing, investigating optimal behavioural car metrics through Turns 1 and 2 of Melbourne Albert Park circuit.
+
 _A short sentence capturing what the project is about_
 
 ---
 
 ## 1. Project Description  
 
-**Rough Draft**  
-The performance of motorsport vehicles is dictated by a range of key factors including braking, turning, and throttle application, each of which plays a critical role in determining speed and lap times. Split-second decisions by drivers at specific sections of the track can define overtaking opportunities, where even microseconds can change outcomes.  
+Performance in motorsports ia dictated by a range of key factors regarding the braking, turning and throttle of the vehicle, where each plays a critical role in determining the final lap time. Often shaped by the split-second decisions made by drivers at specific sections of the track, turns are one such crucial point as they present opportunities for overtaking. As even microsecond differences can dictate differences in these outcomes, minimising the time required to pass through these zones becomes essential, especially in competitive contexts such as Formula One races.
 
-Previous research on optimal driving strategies has often relied on simple simulations or narrow datasets. In this project, we analyze a **Formula One simulation** with a high-resolution dataset capturing vehicle behavior through Turns 1 and 2 at the Albert Park circuit in Melbourne. Our aim is to determine the optimum time until the vehicle reaches Turn 3 (TBD).  
+Previous research on optimal driving strategies has often relied on simple simulations or narrow datasets. In this project, we analyse a **Formula One simulation** with a high-resolution dataset capturing vehicle behaviour through Turns 1 and 2 at the Melbourne Albert Park circuit. Our primary aim is to determine the optimum behavioural car conditions (i.e. braking, throttle, steering) at which the vehicle enters Turn 3, based on the time to reach a fixed distance point.
 
-The setup involves acquiring multiple reference datasets describing the race circuit and lap performance. We visualize the track, clean, and model the data, with the ultimate goal of uncovering insights into vehicle dynamics and racing strategy.  
+The setup involves acquiring multiple reference datasets describing the race circuit and lap performance. Our proposed final dataframe integrates multiple reference data points, capturing key performance indicators (braking point, throttle point, etc) alongside aggregated measures (total throttle, etc) to further complement the evaluation of performances. These tasks highlight a significant initial step in bridging the gap between model driven optimisation and real world telemetry analysis in the modern motorsport landscape.
 
 ---
 
@@ -39,13 +40,20 @@ Important dataset features are listed below:
 - **Features (columns):** speed, throttle, steering, braking, gear, RPM, world position, lap times, sector times, etc.  
 - **Usage:** features will be engineered and aligned with track geometry to evaluate driver performance and racing lines.  
 
+### 2.3 Assumptions  
+
+- **Baseline assumptions:** derived from client consultation (Stuart, Oracle)
+  - Current **f1sim-ref-line** ideal racing line is not indicative of fastest possible route for each driver (Stuart)  
+- **Data cleaning assumptions:**  
+  - Remove irrelevant tracks  
+  - Remove NaNs in car coordinates  
+  - Filter slower drivers (>75th percentile until Turn 3)  
+
 ---
 
 ## 3. Workflow  
 
 The workflow for this project:  
-
-## Workflow  
 
 ### 3.1. Data acquisition  
 
@@ -63,7 +71,7 @@ We began by cleaning the data, first removing unnecessary columns and renaming t
 
 | ![Graph of amount of data by track](images/image.png) |
 |:--:|
-| _Figure ?. Number of data points per track, with approximate track ID layouts._ |
+| _Figure 1. Number of data points per track, with approximate track ID layouts._ |
 
 We therefore removed all data from tracks other than Albert Park, and further excluded datapoints beyond Turn 3, since our focus is on Turns 1 and 2 and the overtaking section between Turns 2 and 3. This was done by filtering for laps with a current lap distance below 1200m.  
 
@@ -77,7 +85,7 @@ To verify the data and provide context for later analysis, we reconstructed the 
 
 | ![Plot of track we are interested in](images/??) |
 |:--:|
-| _Figure ?. Number of data points per track, with approximate track ID layouts._ |
+| _Figure 2. Number of data points per track, with approximate track ID layouts._ |
 
 Should we add the sample turns?
 
@@ -172,7 +180,7 @@ If you’d like to contribute:
 
 For questions or suggestions, contact:  
 
-- Charlotte Fang Hendro – <z54_____@ad.unsw.edu.au>  
+- Charlotte Fang Hendro – <z5363431@ad.unsw.edu.au>  
 - Christian Joel – <z54_____@ad.unsw.edu.au>  
 - Eric Kim – <z54_____@ad.unsw.edu.au>  
 - Muhammad Ijaz – <z5417537@ad.unsw.edu.au>  
@@ -180,11 +188,4 @@ For questions or suggestions, contact:
 
 ---
 
-## Assumptions  
 
-- **Baseline assumptions:** derived from client consultation (Stuart, Oracle)
-  - Current **f1sim-ref-line** ideal racing line is not indicative of fastest possible route for each driver (Stuart)  
-- **Data cleaning assumptions:**  
-  - Remove irrelevant tracks  
-  - Remove NaNs in car coordinates  
-  - Filter slower drivers (>75th percentile until Turn 3)  
