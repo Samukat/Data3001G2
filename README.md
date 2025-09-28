@@ -115,8 +115,6 @@ To verify the data and provide context for later analysis, we reconstructed the 
 |:--:|
 | *Figure 2. Track path from the start of the lap to data collection point* |
 
-Should we add the sample turns?
-
 ### 3.4. Removing unsuitable laps
 
 - Removing rows with less than N (to be determined) data points so features could be constructed cleanly
@@ -225,6 +223,7 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
 
