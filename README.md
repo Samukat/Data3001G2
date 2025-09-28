@@ -40,7 +40,7 @@ The final data product is a lap-level dataset, with each row representing a sing
 - **Usage:** compare driver performance, model lap outcomes, and evaluate optimal racing strategies
 
 *(TODO - TABLE OF FEATURES)*
-The final feature set was informed by exploratory data analysis, literature review, and domain expertise provided by Stuart
+The final feature set was informed by exploratory data analysis, literature review, and domain expertise provided by Stuart.
 
 ---
 
@@ -225,5 +225,6 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
