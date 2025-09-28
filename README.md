@@ -39,7 +39,7 @@ The final data product is a lap-level dataset, with each row representing a sing
 - **Target variable:** lap time at a point, 900m (See section 3.5.3)
 - **Usage:** compare driver performance, model lap outcomes, and evaluate optimal racing strategies
 
-*(TODO - TABLE OF FEATURES)*
+*(TBA - TABLE OF FEATURES)*
 The final feature set was informed by exploratory data analysis, literature review, and domain expertise provided by Stuart.
 
 ---
@@ -111,9 +111,9 @@ Futher laps were removed as dicussed in the *Removing unsuitable laps* section.
 
 To verify the data and provide context for later analysis, we reconstructed the circuit by plotting the left and right boundaries alongside the refrence racing line. Apex points were overlaid, and corners were annotated. We then produced zoomed-in visualisations of Turns 1 and 2, since these form the core section of interest.  
 
-| ![Plot of track we are interested in](images/??) |
+| ![Plot of track we are interested in](images/image-3.png) |
 |:--:|
-| *Figure 2. Number of data points per track, with approximate track ID layouts.* |
+| *Figure 2. Track path from the start of the lap to data collection point* |
 
 Should we add the sample turns?
 
@@ -135,7 +135,7 @@ This feature serves two purposes:
 
 | ![Track width](images/image-1.png) |
 | :-: |
-| *Figure 3. Track width near corner (TODO - Index to be replaced with distance)* |
+| *Figure 3. Track width near corner (TBA - Index to be replaced with distance)* |
 
 #### 3.5.2 Off track
 
@@ -149,16 +149,16 @@ Since the provided coordinates do not account for the car’s physical width, we
 
 #### 3.5.3 Target distance
 
-We choose the target lap distance 900 to be the point where we determine drivers’ time. Since we used linear interpolation of lap distance covered to determine when the driver reaches the target lap distance, the most accurate section between turn 2 and 3 for us to consider for the target lap distance would be the latter half. The reasoning is that the rate of change in acceleration and speed during the exit from turn 2 would be high which in turn would result in the rate of change in lap distance to also be high causing uneven distances between measurement points. This would lead to a less accurate linear interpolation result relative to the latter half since the rate of change in acceleration and speed plateaus and thus results in more even distances between measurement points improving the accuracy of the linear interpolation. We also plotted a brake vs lap distance plot for our subset of drivers and found that majority of drivers begin braking for turn 3 around the lap distance 950. To ensure that our interpolation function does not get influenced by the braking and distances between measurement points, we choose the target lap distance to be 900.
+We chose the target lap distance 900 to be the point where we determine drivers’ time. Since we used linear interpolation of lap distance covered to determine when the driver reaches the target lap distance, the most accurate section between turn 2 and 3 for us to consider for the target lap distance would be the latter half. The reasoning is that the rate of change in acceleration and speed during the exit from turn 2 would be high which in turn would result in the rate of change in lap distance to also be high causing uneven distances between measurement points. This would lead to a less accurate linear interpolation result relative to the latter half since the rate of change in acceleration and speed plateaus and thus results in more even distances between measurement points improving the accuracy of the linear interpolation. We also plotted a brake vs lap distance plot for our subset of drivers and found that majority of drivers begin braking for turn 3 around the lap distance 950. To ensure that our interpolation function does not get influenced by the braking and distances between measurement points, we choose the target lap distance to be 900.
 
 It is also to note that by choosing a later point, rather than just after Turn 2, we optimise two objectives simultaneously: maximising exit speed from the corner and minimising the elapsed time to complete the run into Turn 3. This works because exit speed and segment time are inherently linked, so optimising the target point jointly improves both objectives simultaneously.
 
-**(TO DO - CODE )**
+**(TBA - CODE )**
 We constructed new features to capture driver behaviour and vehicle dynamics more explicitly. These include braking and acceleration zones, steering angles, and measures of cornering precision. Each feature was designed as a separate transformation so that the pipeline can flexibly add or remove features depending on modelling needs.  
 
 ### Analysis and modelling (planned)  
 
-Our next step is to evaluate driver performance through Turns 1–3, comparing how different inputs (braking, throttle, steering) impact lap time / speed / **(TO DO - THEORY)**.
+Our next step is to evaluate driver performance through Turns 1–3, comparing how different inputs (braking, throttle, steering) impact lap time / speed / **(TBA - THEORY)**.
 
 ---
 
@@ -225,6 +225,7 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
 
