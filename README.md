@@ -95,7 +95,7 @@ We began by ingesting multiple reference raw datasets that describe the Albert P
 
 ### 3.2. Data and Cleaning
 
-We began by cleaning the data, first removing unnecessary columns and renaming the remaining columns for clarity. The dataset also contained laps from tracks that were not part of our analysis (see figure ?).  
+We began by cleaning the data, first removing unnecessary columns and renaming the remaining columns for clarity. The dataset also contained laps from tracks that were not part of our analysis (see figure 1).  
 
 | ![Graph of amount of data by track](images/image.png) |
 |:--:|
@@ -225,6 +225,7 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
 
