@@ -57,7 +57,7 @@ We began by ingesting multiple reference raw datasets that describe the Albert P
 
  These were combined with the UNSW F1 2024 lap telemetry dataset (UNSW F12024.csv), which contains detailed information about driver inputs (throttle, braking, steering) and car dynamics (speed, gear, RPM, position).  
 
-### Data and Cleaning
+### 3.2. Data and Cleaning
 
 We began by cleaning the data, first removing unnecessary columns and renaming the remaining columns for clarity. The dataset also contained laps from tracks that were not part of our analysis (see figure ?).  
 
