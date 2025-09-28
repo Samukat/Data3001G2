@@ -47,7 +47,7 @@ The workflow for this project:
 
 ## Workflow  
 
-### Data acquisition  
+### 3.1. Data acquisition  
 
 We began by ingesting multiple reference raw datasets that describe the Albert Park circuit:
 
