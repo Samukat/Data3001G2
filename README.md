@@ -8,7 +8,7 @@ _A short sentence capturing what the project is about_
 
 ## 1. Project Description  
 
-Performance in motorsports ia dictated by a range of key factors regarding the braking, turning and throttle of the vehicle, where each plays a critical role in determining the final lap time. Often shaped by the split-second decisions made by drivers at specific sections of the track, turns are one such crucial point as they present opportunities for overtaking. As even microsecond differences can dictate differences in these outcomes, minimising the time required to pass through these zones becomes essential, especially in competitive contexts such as Formula One races.
+Performances in motorsports are dictated by a range of key factors regarding the braking, turning and throttle of the vehicle, where each plays a critical role in determining the final lap time. Often shaped by the split-second decisions made by drivers at specific sections of the track, turns are one such crucial point as they present opportunities for overtaking. As even microsecond differences can dictate differences in these outcomes, minimising the time required to pass through these zones becomes essential, especially in competitive contexts such as Formula One races.
 
 Previous research on optimal driving strategies has often relied on simple simulations or narrow datasets. In this project, we analyse a **Formula One simulation** with a high-resolution dataset capturing vehicle behaviour through Turns 1 and 2 at the Melbourne Albert Park circuit. Our primary aim is to determine the optimum behavioural car conditions (i.e. braking, throttle, steering) at which the vehicle enters Turn 3, based on the time to reach a fixed distance point.
 
@@ -20,7 +20,7 @@ The setup involves acquiring multiple reference datasets describing the race cir
 
 ### 2.1 Sources  
 
-Our project uses several **Jupyter Notebooks** for analysis and visualization, and **Python files** for model training.  
+Our project uses several **Jupyter Notebooks** for analysis and visualization, and **Python files** for building the complete dataset.  
 
 Data sources include:  
 
@@ -197,11 +197,14 @@ If you’d like to contribute:
 For questions or suggestions, contact:  
 
 - Charlotte Fang Hendro – <z5363431@ad.unsw.edu.au>  
-- Christian Joel – <z54_____@ad.unsw.edu.au>  
-- Eric Kim – <z54_____@ad.unsw.edu.au>  
+- Christian Joel – <z5257354@ad.unsw.edu.au>  
+- Eric Kim – <z5478624@ad.unsw.edu.au>  
 - Muhammad Ijaz – <z5417537@ad.unsw.edu.au>  
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
+
+
 
 
