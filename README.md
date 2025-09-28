@@ -181,12 +181,13 @@ If you’d like to contribute:
 For questions or suggestions, contact:  
 
 - Charlotte Fang Hendro – <z5363431@ad.unsw.edu.au>  
-- Christian Joel – <z54_____@ad.unsw.edu.au>  
+- Christian Joel – <z5257354@ad.unsw.edu.au>  
 - Eric Kim – <z5478624@ad.unsw.edu.au>  
 - Muhammad Ijaz – <z5417537@ad.unsw.edu.au>  
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
 
