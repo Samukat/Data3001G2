@@ -1,8 +1,6 @@
 ﻿# ApexRacing
 
-A data-driven analysis of telemetry-based performance in F1 simulation racing, investigating optimal behavioural car metrics through Turns 1 and 2 of Melbourne Albert Park circuit.
-
-_A short sentence capturing what the project is about_
+**A data-driven analysis of telemetry-based performance in F1 simulation racing, investigating optimal behavioural car metrics through Turns 1 and 2 of Melbourne Albert Park circuit.**
 
 ---
 
