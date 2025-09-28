@@ -20,7 +20,7 @@ The setup involves acquiring multiple reference datasets describing the race cir
 
 ### 2.1 Sources  
 
-Our project uses several **Jupyter Notebooks** for analysis and visualization, and **Python files** for model training.  
+Our project uses several **Jupyter Notebooks** for analysis and visualization, and **Python files** for building the complete dataset.  
 
 Data sources include:  
 
