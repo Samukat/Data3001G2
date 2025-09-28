@@ -84,7 +84,7 @@ Should we add the sample turns?
 ### Removing unsuitable laps
 
 - Removing rows with less than N (to be determined) data points so features could be constructed cleanly
-- Removing laps where lap max distance between points become too great -> inacuracy
+- Removing laps where lap max distance between points become too great -> inaccuracy
 
 ### Feature engineering  
 
@@ -188,6 +188,7 @@ For questions or suggestions, contact:
   - Remove irrelevant tracks  
   - Remove NaNs in car coordinates  
   - Filter slower drivers (>75th percentile until Turn 3)  
+
 
 
 
