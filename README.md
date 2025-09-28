@@ -111,7 +111,7 @@ Futher laps were removed as dicussed in the *Removing unsuitable laps* section.
 
 To verify the data and provide context for later analysis, we reconstructed the circuit by plotting the left and right boundaries alongside the refrence racing line. Apex points were overlaid, and corners were annotated. We then produced zoomed-in visualisations of Turns 1 and 2, since these form the core section of interest.  
 
-| ![Plot of track we are interested in](images/image-3.png) |
+| ![Plot of track we are interested in](images/image-3.PNG) |
 |:--:|
 | *Figure 2. Track path from the start of the lap to data collection point* |
 
@@ -225,6 +225,7 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
 
