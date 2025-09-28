@@ -71,6 +71,7 @@ The incoming telemetry contains frame-level observations of driver and vehicle s
 ### 2.3 Assumptions  
 
 - **Baseline assumptions:** derived from client consultation (Stuart, Oracle)
+  - The first measured lap is a flying lap, meaning that the car crosses the start/finish line already at racing speed. Data collection begins at ≈0 m with the car already moving, not from a standing start
   - Current **f1sim-ref-line** ideal racing line is not indicative of fastest possible route for each driver (Stuart)  
 - **Data cleaning assumptions:**  
   - Remove irrelevant tracks  
@@ -223,6 +224,7 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
 
