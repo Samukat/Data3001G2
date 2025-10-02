@@ -45,3 +45,42 @@ def angle_between(v1, v2):
     angle[cross < 0] = -angle[cross < 0]
 
     return np.degrees(angle)
+
+
+def interpolate_time_atime(df, target):
+    results = []
+    grouped = df.groupby(["SESSIONUID", "CURRENTLAPNUM"])
+
+    for (session, lap), L in grouped:
+        L = L.sort_values("LAPDISTANCE").copy()
+
+        # find the two points surrounding the "finish line"
+        before = L[L["LAPDISTANCE"] <= target].tail(1)
+        after = L[L["LAPDISTANCE"] >= target].head(1)
+
+        if before["LAPDISTANCE"].values[0] == after["LAPDISTANCE"].values[0]:
+            time = before["CURRENTLAPTIMEINMS"].values[0]
+        else:
+            p0 = np.array([before["WORLDPOSITIONX"].values[0],
+                           before["WORLDPOSITIONY"].values[0],
+                           before["WORLDPOSITIONZ"].values[0]])
+            p1 = np.array([after["WORLDPOSITIONX"].values[0],
+                           after["WORLDPOSITIONY"].values[0],
+                           after["WORLDPOSITIONZ"].values[0]])
+
+            # ratio of how far along the segment the target lies (by LAPDISTANCE)
+            d0, d1 = before["LAPDISTANCE"].values[0], after["LAPDISTANCE"].values[0]
+            ratio = (target - d0) / (d1 - d0)
+
+            # interpolate time using the ratio
+            t0, t1 = before["CURRENTLAPTIMEINMS"].values[0], after["CURRENTLAPTIMEINMS"].values[0]
+            time = t0 + ratio * (t1 - t0)
+
+        results.append({
+            "SESSIONUID": session,
+            "CURRENTLAPNUM": lap,
+            "target_distance": target,
+            "interpolated_time_ms": time
+        })
+
+    return pd.DataFrame(results)
