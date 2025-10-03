@@ -210,3 +210,32 @@ def id_outoftrack(df, buffer=0.53, start=350, end=600, inplace=True):
 def add_lap_id(df):
     df['lap_id'] = df.groupby(['SESSIONUID', 'CURRENTLAPNUM']).ngroup()
     return df
+
+
+def car_from_ref_line(data, ref_line, x_col=x_col, y_col=y_col):
+    ref_points = np.vstack([ref_line["WORLDPOSX"], ref_line["WORLDPOSY"]]).T
+    tree = KDTree(ref_points)
+
+    df = data.copy()
+    proj_vals = np.zeros(len(df))
+    car_points = df[[x_col, y_col]].values
+    car_forward = df[["WORLDFORWARDDIRX", "WORLDFORWARDDIRY"]].values
+
+    for i in tqdm(range(len(df)), desc="Referencing relative ref line"):
+        car_point = car_points[i]
+        dist_vals, idxs = tree.query(car_point, k=2)
+        p0, p1 = ref_points[idxs[0]], ref_points[idxs[1]]
+
+        # projection along the segment
+        proj = projection_values(car_point, p0, p1)['d']
+
+        # determine side: left (-) or right (+) relative to the segment
+        vec_seg = p1 - p0
+        vec_car = car_point - p0
+        cross = vec_seg[0]*vec_car[1] - vec_seg[1] * \
+            vec_car[0]  # 2D cross product
+
+        proj_vals[i] = proj  # if cross >= 0 else -proj
+
+    df["proj_from_ref"] = proj_vals
+    return df

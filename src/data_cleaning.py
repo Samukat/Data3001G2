@@ -15,3 +15,4 @@ def remove_na(data: pd.DataFrame, subset) -> pd.DataFrame:
 
 def filter_by_distance(data: pd.DataFrame) -> pd.DataFrame:
     return data[data['LAPDISTANCE'] <= MAX_DISTANCE].reset_index(drop=True)
+
