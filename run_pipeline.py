@@ -21,7 +21,8 @@ from src.data_cleaning import (
     remove_other_tracks,
     remove_na,
     # renaming_cols,
-    filter_by_distance
+    filter_by_distance,
+    remove_lowinfo_laps
 )
 from src.data_loader import load_race_data, load_entire_track
 
@@ -56,9 +57,11 @@ def build_dataset(df: pd.DataFrame = None):
 
     print(f"   {len(df)} records after cleaning")
 
-    print("\n[3/6] Filtering by distance...")
+    print("\n[3/6] Filtering by distance and points...")
     df = filter_by_distance(df)
     print(f"   {len(df)} records after filtering")
+    df = add_lap_id(df)
+    df = remove_lowinfo_laps(df)
 
     print("\n[4/6] Computing track features...")
     left_with_width, right_with_width = calculate_track_width(
@@ -71,7 +74,6 @@ def build_dataset(df: pd.DataFrame = None):
 
     # Step 6: Identify off-track incidents
     print("\n[6/6] Identifying off-track incidents...")
-    df = add_lap_id(df)
     df = id_outoftrack(df)
     n_valid = len(df[df["invalid_lap"] == 0]["lap_id"].drop_duplicates())
     n_invalid = len(df[df["invalid_lap"] == 1]["lap_id"].drop_duplicates())

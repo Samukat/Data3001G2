@@ -10,6 +10,8 @@ DATAFOLDER = Path("data")
 OUTPUT_FOLDER = Path("data")
 TRACK_DATA_FOLDER = Path("data")
 
+MIN_POINTS_LAP = 900
+
 # Column names
 RELEVANT_COLS = [
     "SESSION_GUID", "M_CURRENTLAPNUM", "M_SESSIONUID", "M_SPEED_1",

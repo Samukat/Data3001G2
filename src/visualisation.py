@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.spatial import KDTree
 
 
 def plot_k_turns(data, turns, track_left, track_right, x_col="WORLDPOSITIONX", y_col="WORLDPOSITIONY", k=3, color_col="M_SPEED_1", title="Track Sections Near Turns", cmap="viridis"):
@@ -41,7 +42,7 @@ def plot_k_turns(data, turns, track_left, track_right, x_col="WORLDPOSITIONX", y
 
 def plot_laps(data, y_col="BRAKE", distance_range=(0, 300),
               exclude_laps=None, only_valid=True,
-              figsize=(12, 8), point_size=1):
+              figsize=(12, 8), point_size=1, ax=None):
     """
     Plot lap data with LAPDISTANCE on the x-axis and a chosen column on the y-axis.
 
@@ -58,11 +59,14 @@ def plot_laps(data, y_col="BRAKE", distance_range=(0, 300),
     only_valid : bool, default=True
         If True, filter out invalid laps.
     figsize : tuple, default=(12, 8)
-        Figure size.
+        Figure size (only used if ax is None).
     point_size : int, default=1
         Scatter point size.
+    ax : matplotlib.axes.Axes, optional
+        Axis to draw on. If None, a new figure/axis is created.
     """
 
+    plot_true = True if ax is None else False
     d = data.copy()
 
     # Filter invalid laps
@@ -77,11 +81,83 @@ def plot_laps(data, y_col="BRAKE", distance_range=(0, 300),
     d = d[(d["LAPDISTANCE"] >= distance_range[0]) &
           (d["LAPDISTANCE"] <= distance_range[1])]
 
+    # Make axis if not supplied
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+
     # Plot
-    plt.figure(figsize=figsize)
-    plt.scatter(d["LAPDISTANCE"], d[y_col], s=point_size, c=d["lap_id"])
-    plt.xlabel("LAPDISTANCE")
-    plt.ylabel(y_col)
-    plt.title(f"{y_col} vs LAPDISTANCE")
-    # plt.colorbar(label="lap_id")
-    plt.show()
+    sc = ax.scatter(d["LAPDISTANCE"], d[y_col],
+                    s=point_size, c=d["lap_id"])
+    ax.set_xlabel("LAPDISTANCE")
+    ax.set_ylabel(y_col)
+    ax.set_title(f"{y_col} vs LAPDISTANCE")
+    if plot_true:
+        plt.show()
+
+    return ax
+
+
+def plot_lap(data, track_left, track_right, turns,
+             x_col="WORLDPOSITIONX", y_col="WORLDPOSITIONY",
+             color_col="M_SPEED_1", title="Full Lap with Local Track Boundaries",
+             cmap="viridis", radius=30, ax=None):
+    """
+    Plot a full lap trajectory, showing only track boundaries and apex points
+    within a specified radius (in meters) of the lap line.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        Lap telemetry data.
+    track_left, track_right : pd.DataFrame
+        Track boundary coordinates.
+    turns : pd.DataFrame
+        Apex point data (expects columns 'APEX_X1', 'APEX_Y1').
+    radius : float
+        Radius (m) around lap path within which to show boundaries/apexes.
+    """
+
+    plot_true = True if ax is None else False
+
+    # Build KDTree for the lap path
+    lap_points = np.vstack([data[x_col], data[y_col]]).T
+    lap_tree = KDTree(lap_points)
+
+    # Helper function to get nearby points
+    def filter_nearby(df, x="WORLDPOSX", y="WORLDPOSY"):
+        pts = np.vstack([df[x], df[y]]).T
+        idx = lap_tree.query_ball_point(pts, r=radius)
+        mask = np.array([len(i) > 0 for i in idx])
+        return df[mask]
+
+    # Filter left/right track points within radius
+    tl_near = filter_nearby(track_left)
+    tr_near = filter_nearby(track_right)
+
+    # Filter apex points near lap
+    apex_points = turns[["APEX_X1", "APEX_Y1"]].dropna()
+    apex_near = filter_nearby(apex_points, x="APEX_X1", y="APEX_Y1")
+
+    # Plot
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 10))
+    scatter = ax.scatter(data[x_col], data[y_col], c=data[color_col],
+                         s=3, cmap=cmap, label="Lap Path")
+    ax.scatter(tl_near["WORLDPOSX"], tl_near["WORLDPOSY"],
+               s=2, color="red", label="Track Left", )
+    ax.scatter(tr_near["WORLDPOSX"], tr_near["WORLDPOSY"],
+               s=2, color="red", alpha=0.7, label="Track Right")
+    ax.scatter(apex_near["APEX_X1"], apex_near["APEX_Y1"],
+               s=25, color="black", alpha=0.7, label="Apex")
+
+    if plot_true:
+        plt.colorbar(scatter, ax=ax, label=color_col)
+
+    ax.set_title(title)
+    # ax.set_xlabel("World X")
+    # ax.set_ylabel("World Y")
+    ax.legend()
+
+    if plot_true:
+        plt.axis("equal")
+        plt.show()
