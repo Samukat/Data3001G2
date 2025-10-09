@@ -15,7 +15,8 @@ from src.track_features import (
     compute_distace_to_apex,
     compute_angle_to_apex,
     id_outoftrack,
-    add_lap_id
+    add_lap_id,
+    car_from_ref_line
 )
 from src.data_cleaning import (
     remove_other_tracks,
@@ -47,7 +48,7 @@ def build_dataset(df: pd.DataFrame = None):
     print("\n[1/6] Loading data...")
     df = load_race_data("UNSW F12024.csv", df)
 
-    track_left, track_right, _, turns = load_entire_track()
+    track_left, track_right, ref_line, turns = load_entire_track()
     print(f"   Loaded {len(df)} race records")
     print(f"   Loaded track data")
 
@@ -67,6 +68,7 @@ def build_dataset(df: pd.DataFrame = None):
     left_with_width, right_with_width = calculate_track_width(
         track_left, track_right)
     df = car_edge_distances(df, left_with_width, right_with_width)
+    df = car_from_ref_line(df, ref_line)
 
     print("\n[5/6] Computing apex features...")
     df = compute_distace_to_apex(df, turns)
