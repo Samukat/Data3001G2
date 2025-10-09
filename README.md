@@ -50,7 +50,7 @@ Representative examples include:
 
 The following documentation expands on our engineered features by defining two key layers of our feature design - **Moments** and **Attrbutes** - and illustrate how these interact in our dataframe.
 
-#### Moments
+#### <u>Moments</u>
 
 **Moments** represent key behavioural or mechanical events that occurs durisng a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
 
@@ -68,7 +68,7 @@ The following documentation expands on our engineered features by defining two k
 
 Overall, these **Moments** define the critical phases of vehicle behaviour during Turns 1–3 and are used as anchor points for deriving further measurements.
 
-#### Attributes
+#### <u>Attributes</u>
 
 **Attributes** describe *what* is being measured at or around each Moment. They capture the car’s physical and temporal states (position, distance, steering angle) to quantify how the driver’s input changes through each phase.
 
@@ -85,7 +85,7 @@ Overall, these **Moments** define the critical phases of vehicle behaviour durin
 | Time to extrema | `*_TE` | Scalar | Time difference between current frame and the feature’s peak event |
 | Rotational forces | `*_PITCH`, `*_YAW`, `*_ROLL` | Scalar | Captures vehicle rotation around each axis to analyse corner dynamics |
 
-#### How to Read 
+#### <u>How to Read</u>
 
 The **Moments** and **Attributes** tables are designed to be read together. Each feature in the engineered dataset is formed by combining a **Moment code** (indicating *when* the measurement occurs) with an **Attribute suffix** (indicating *what* is being measured).  
 
