@@ -46,7 +46,61 @@ Representative examples include:
 - **Braking, throttle, and steering points** (both first instance and averages)
 - **Car characteristics at turns**, such as DRS status, RPM, and steering angle (used to approximate downforce)
 
-#### 2.2.2. Incoming and Cleaned Data Description
+#### 2.2.2. Table of Features
+
+The following documentation expands on our engineered features by defining two key layers of our feature design - **Moments** and **Attrbutes** - and illustrate how these interact in our dataframe.
+
+#### Moments
+
+**Moments** represent key behavioural or mechanical events that occurs durisng a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
+
+| **Type of Moment** | **Moment** | **Code** | **Time-to-Extrema** | **Description** |
+|--------------------|------------------------|-----------------------|--------------------|----------------|
+| Variable | First Brake | `BP` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
+| Variable | End Brake | `brake_end` | Yes | Marks the release of braking input |
+| Variable | Start Steering | `SS1`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
+| Variable | End Steering | `ES1`, `ES2` | ? | Captures the point where steering angle returns to neutral after a turn |
+| Variable | Middle Turning Point | `TM` | No | Represents the midpoint of steering angle |
+| Variable | Off Throttle | `ET1` | Yes | Indicates when the driver fully releases throttle before entering a corner |
+| Variable | Start Throttle | `FT1` | Yes | Marks the moment throttle is reapplied after corner exit |
+| Fixed | Apex (actual) | `APEX1`, `APEX2` | No | Defines the true geometric apex points of Turns 1 and 2 |
+| Fixed | Distances | `CP360`, `CP430`, `CP530`, `CP900` | No | Reference points from start line |
+
+Overall, these **Moments** define the critical phases of vehicle behaviour during Turns 1–3 and are used as anchor points for deriving further measurements.
+
+#### Attributes
+
+**Attributes** describe *what* is being measured at or around each Moment. They capture the car’s physical and temporal states (position, distance, steering angle) to quantify how the driver’s input changes through each phase.
+
+| **Attribute** | **Code Pattern / Suffix** | **Type / Shape** | **Description** |
+|----------------|---------------------------|------------------|-----------------|
+| Lap distance | `*_LD` | Scalar (m) | Linear distance travelled at each moment |
+| Position X/Y | `*_X`, `*_Y` | Scalar | Car coordinates used to reconstruct trajectories |
+| Timestamp / Lap time | `*_T` | Scalar | Captures temporal alignment of events |
+| Relative displacement | `*_R` | Scalar (m) | Perpendicular offset from racing line or track edge |
+| Distance to apex | `*_APEX1_D`, `*_APEX2_D` | Scalar (m) | Euclidean distance from car position to turn apex |
+| Angle to apex | `*_APEX1_A`, `*_APEX2_A` | Angle | Angular offset between car heading and apex vector |
+| Steering angle | `*_STEER` | Angle | Direction and intensity of steering input |
+| Velocity vs tire direction | `*_VEL_ANG` | Angle | Difference between velocity vector and tyre direction |
+| Time to extrema | `*_TE` | Scalar | Time difference between current frame and the feature’s peak event |
+| Rotational forces | `*_PITCH`, `*_YAW`, `*_ROLL` | Scalar | Captures vehicle rotation around each axis to analyse corner dynamics |
+
+#### How to Read 
+
+The **Moments** and **Attributes** tables are designed to be read together. Each feature in the engineered dataset is formed by combining a **Moment code** (indicating *when* the measurement occurs) with an **Attribute suffix** (indicating *what* is being measured).  
+
+For example:
+
+- **`BP_STEER`** - steering angle recorded at the **First Brake** moment
+- **`FT1_APEX1_D`** - distance from the car to the first apex when **Start Throttle** occurs
+- **`TM_YAW`** - yaw rotation (rate of directional change) measured at the **Middle Turning Point** 
+- **`ET1_TE`** - time to peak deceleration from the **Off Throttle** event
+
+This modular naming convention ensures every feature is able to be interpreted and traced back to its functional purpose within the lap.
+
+By following this convention, users may efficiently locate, filter, and compare driver performance metrics across moments, laps, and turns, enabling consistent and replicable analysis across future model iterations.
+
+#### 2.2.3. Incoming and Cleaned Data Description
 
 The incoming telemetry contains frame-level observations of driver and vehicle state (speed, throttle, steering, braking, gear, RPM, world position, lap/sector times). These raw data are cleaned, synchronised, and aligned with the track, then aggregated into lap-level summaries that form the basis of the final dataset.
 
@@ -156,61 +210,7 @@ We chose the target lap distance 900 to be the point where we determine drivers�
 It is also to note that by choosing a later point, rather than just after Turn 2, we optimise two objectives simultaneously: maximising exit speed from the corner and minimising the elapsed time to complete the run into Turn 3. This works because exit speed and segment time are inherently linked, so optimising the target point jointly improves both objectives simultaneously.
 
 **(TBA - CODE )**
-We constructed new features to capture driver behaviour and vehicle dynamics more explicitly. These include braking and acceleration zones, steering angles, and measures of cornering precision. Each feature was designed as a separate transformation so that the pipeline can flexibly add or remove features depending on modelling needs. 
-
-### 3.6. Feature Documentation
-
-The following documentation expands on our engineered features by defining two key layers of our feature design - **Moments** and **Attrbutes** - and illustrate how these interact in our dataframe.
-
-#### 3.6.1. Moments
-
-**Moments** represent key behavioural or mechanical events that occurs durisng a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
-
-| **Type of Moment** | **Moment** | **Code** | **Time-to-Extrema** | **Description** |
-|--------------------|------------------------|-----------------------|--------------------|----------------|
-| Variable | First Brake | `BP` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
-| Variable | End Brake | `brake_end` | Yes | Marks the release of braking input |
-| Variable | Start Steering | `SS1`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
-| Variable | End Steering | `ES1`, `ES2` | ? | Captures the point where steering angle returns to neutral after a turn |
-| Variable | Middle Turning Point | `TM` | No | Represents the midpoint of steering angle |
-| Variable | Off Throttle | `ET1` | Yes | Indicates when the driver fully releases throttle before entering a corner |
-| Variable | Start Throttle | `FT1` | Yes | Marks the moment throttle is reapplied after corner exit |
-| Fixed | Apex (actual) | `APEX1`, `APEX2` | No | Defines the true geometric apex points of Turns 1 and 2 |
-| Fixed | Distances | `CP360`, `CP430`, `CP530`, `CP900` | No | Reference points from start line |
-
-Overall, these **Moments** define the critical phases of vehicle behaviour during Turns 1–3 and are used as anchor points for deriving further measurements.
-
-#### 3.6.2. Attributes
-
-**Attributes** describe *what* is being measured at or around each Moment. They capture the car’s physical and temporal states (position, distance, steering angle) to quantify how the driver’s input changes through each phase.
-
-| **Attribute** | **Code Pattern / Suffix** | **Type / Shape** | **Description** |
-|----------------|---------------------------|------------------|-----------------|
-| Lap distance | `*_LD` | Scalar (m) | Linear distance travelled at each moment |
-| Position X/Y | `*_X`, `*_Y` | Scalar | Car coordinates used to reconstruct trajectories |
-| Timestamp / Lap time | `*_T` | Scalar | Captures temporal alignment of events |
-| Relative displacement | `*_R` | Scalar (m) | Perpendicular offset from racing line or track edge |
-| Distance to apex | `*_APEX1_D`, `*_APEX2_D` | Scalar (m) | Euclidean distance from car position to turn apex |
-| Angle to apex | `*_APEX1_A`, `*_APEX2_A` | Angle | Angular offset between car heading and apex vector |
-| Steering angle | `*_STEER` | Angle | Direction and intensity of steering input |
-| Velocity vs tire direction | `*_VEL_ANG` | Angle | Difference between velocity vector and tyre direction |
-| Time to extrema | `*_TE` | Scalar | Time difference between current frame and the feature’s peak event |
-| Rotational forces | `*_PITCH`, `*_YAW`, `*_ROLL` | Scalar | Captures vehicle rotation around each axis to analyse corner dynamics |
-
-#### 3.6.3. How to Read Documentation  
-
-The **Moments** and **Attributes** tables are designed to be read together. Each feature in the engineered dataset is formed by combining a **Moment code** (indicating *when* the measurement occurs) with an **Attribute suffix** (indicating *what* is being measured).  
-
-For example:
-
-- **`BP_STEER`** - steering angle recorded at the **First Brake** moment
-- **`FT1_APEX1_D`** - distance from the car to the first apex when **Start Throttle** occurs
-- **`TM_YAW`** - yaw rotation (rate of directional change) measured at the **Middle Turning Point** 
-- **`ET1_TE`** - time to peak deceleration from the **Off Throttle** event
-
-This modular naming convention ensures every feature is able to be interpreted and traced back to its functional purpose within the lap.
-
-By following this convention, users may efficiently locate, filter, and compare driver performance metrics across moments, laps, and turns, enabling consistent and replicable analysis across future model iterations.
+We constructed new features (**see 2.2.2.**) to capture driver behaviour and vehicle dynamics more explicitly. These include braking and acceleration zones, steering angles, and measures of cornering precision. Each feature was designed as a separate transformation so that the pipeline can flexibly add or remove features depending on modelling needs. 
 
 ### 3.7. Analysis and modelling (planned)  
 
