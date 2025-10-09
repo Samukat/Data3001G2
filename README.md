@@ -1,4 +1,4 @@
-﻿# ApexRacing
+# ApexRacing
 
 **A data-driven analysis of telemetry-based performance in F1 simulation racing, investigating optimal behavioural car metrics through Turns 1 and 2 of Melbourne Albert Park circuit.**
 
@@ -38,13 +38,6 @@ The final data product is a lap-level dataset, with each row representing a sing
 - **Features (columns):** engineered summaries of braking, throttle, steering, speed, and sector performance
 - **Target variable:** lap time at a point, 900m (See section 3.5.3)
 - **Usage:** compare driver performance, model lap outcomes, and evaluate optimal racing strategies
-
-*(TBA – Table of Features)*
-The final feature set was developed through a combination of exploratory data analysis, insights from the literature, and domain expertise provided by Stuart.
-Representative examples include:
-- **Angle and distance to apex** (already implemented)
-- **Braking, throttle, and steering points** (both first instance and averages)
-- **Car characteristics at turns**, such as DRS status, RPM, and steering angle (used to approximate downforce)
 
 #### 2.2.2. Table of Features
 
