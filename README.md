@@ -30,7 +30,7 @@ Data sources include:
 
 ### 2.2 Data Description  
 
-The goal of the final data product is to construct a dataset that captures the distinguishing features of driver performance through a cleaned variant of the original dataset, enhanced with feature-engineered variables. These features will allow us to redefine the current **f1sim-ref-line** optimal racing line (and associated trigger points) to accurately reflect the best possible path any driver can take that minimizes time over the sampled portion of the track (ending after Turn 3). The dataset will be designed so that a typical driver can follow this optimized line (changing braking, acceleration and steering upon a set of placed triggers) to achieve maximum speed through the first three turns.
+The goal of the final data product is to construct a dataset that captures the distinguishing features of driver performance through a cleaned variant of the original dataset, enhanced with feature-engineered variables. These features will allow us to redefine the current **f1sim-ref-line** optimal racing line (and associated trigger points) to accurately reflect the best possible path any driver can take that minimises time over the sampled portion of the track (ending after Turn 3). The dataset will be designed so that a typical driver can follow this optimised line (changing braking, acceleration and steering upon a set of placed triggers) to achieve maximum speed through the first three turns.
 
 Important dataset features are listed below:  
 
@@ -108,7 +108,7 @@ Should we add the sample turns?
 - Removing rows with less than N (to be determined) data points so features could be constructed cleanly
 - Removing laps where lap max distance between points become too great -> inaccuracy
 
-### 3.5. Feature engineering  
+### 3.5. Feature Engineering  
 
 #### Track Width
 
@@ -125,12 +125,71 @@ This feature serves two purposes:
 
 To identify when cars went off track, we calculated each car’s perpendicular distance from both the left and right track boundaries and summed these distances. If the total distance exceeded the width of the track at that point, plus a buffer accounting for the car’s width, the car was considered off track.  
 
-Since the provided coordinates do not account for the car’s physical width, we needed to choose an appropriate buffer. The dataset included an `INVALID_LAP` flag indicating whether the car went off track at any point in the lap. We used this flag to test different buffer values and selected the one that maximized the F1 score (Balancing false positives and false negatives) representing what is most likley the same buffer width used in the races / game simulation.
+Since the provided coordinates do not account for the car’s physical width, we needed to choose an appropriate buffer. The dataset included an `INVALID_LAP` flag indicating whether the car went off track at any point in the lap. We used this flag to test different buffer values and selected the one that maximised the F1 score (Balancing false positives and false negatives) representing what is most likley the same buffer width used in the races / game simulation.
 
 ![alt text](images/image-2.png)
 
 **(TO DO - CODE )**
+
 We constructed new features to capture driver behaviour and vehicle dynamics more explicitly. These include braking and acceleration zones, steering angles, and measures of cornering precision. Each feature was designed as a separate transformation so that the pipeline can flexibly add or remove features depending on modelling needs.  
+
+### 3.6. Feature Documentation
+
+The following documentation expands on our engineered features by defining two key layers of our feature design - **Moments** and **Attrbutes** - and illustrate how these interact in our dataframe.
+
+#### Moments
+
+Each **Moment** represents a key behavioural event that occurs during a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
+
+| **Type of Moment** | **Moment** | **Code** | **Time-to-Extrema** | **Description** |
+|--------------------:|------------------------:|-----------------------:|--------------------:|----------------:|
+| Variable | First Brake | `BP` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
+| Variable | End Brake | `brake_end` | Yes | Marks the release of braking input |
+| Variable | Start Steering | `SS1`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
+| Variable | End Steering | `ES1`, `ES2` | ? | Captures the point where steering angle returns to neutral after a turn |
+| Variable | Middle Turning Point | `TM` | No | Represents the midpoint of steering angle |
+| Variable | Off Throttle | `ET1` | Yes | Indicates when the driver fully releases throttle before entering a corner |
+| Variable | Start Throttle | `FT1` | Yes | Marks the moment throttle is reapplied after corner exit |
+| Fixed | Apex (actual) | `APEX1`, `APEX2` | No | Defines the true geometric apex points of Turns 1 and 2 |
+| Fixed | Distances | `CP360`, `CP430`, `CP530`, `CP900` | No | Reference points from start line |
+
+Overall, these **Moments** define the critical phases of vehicle behaviour during Turns 1–3 and are used as anchor points for deriving further measurements.
+
+---
+
+#### Attributes
+
+**Attributes** describe *what* is being measured at or around each Moment. They capture the car’s physical and temporal states (position, distance, steering angle) to quantify how the driver’s input changes through each phase.
+
+| **Attribute** | **Code Pattern / Suffix** | **Type / Shape** | **Description** |
+|----------------|---------------------------|------------------|-----------------|
+| Lap distance | `*_LD` | Scalar (m) | Linear distance travelled at each moment |
+| Position X/Y | `*_X`, `*_Y` | Scalar | Car coordinates used to reconstruct trajectories |
+| Timestamp / Lap time | `*_T` | Scalar | Captures temporal alignment of events |
+| Relative displacement | `*_R` | Scalar (m) | Perpendicular offset from racing line or track edge |
+| Distance to apex | `*_APEX1_D`, `*_APEX2_D` | Scalar (m) | Euclidean distance from car position to turn apex |
+| Angle to apex | `*_APEX1_A`, `*_APEX2_A` | Angle | Angular offset between car heading and apex vector |
+| Steering angle | `*_STEER` | Angle | Direction and intensity of steering input |
+| Velocity vs tire direction | `*_VEL_ANG` | Angle | Difference between velocity vector and tyre direction |
+| Time to extrema | `*_TE` | Scalar | Time difference between current frame and the feature’s peak event |
+| Rotational forces | `*_PITCH`, `*_YAW`, `*_ROLL` | Scalar | Captures vehicle rotation around each axis to analyse corner dynamics |
+
+---
+
+#### How to Read Documentation  
+
+The **Moments** and **Attributes** tables are designed to be read together. Each feature in the engineered dataset is formed by combining a **Moment code** (indicating *when* the measurement occurs) with an **Attribute suffix** (indicating *what* is being measured).  
+
+For example:
+
+- **`BP_STEER`** - steering angle recorded at the **First Brake** moment
+- **`FT1_APEX1_D`** - distance from the car to the first apex when **Start Throttle** occurs
+- **`TM_YAW`** - yaw rotation (rate of directional change) measured at the **Middle Turning Point** 
+- **`ET1_TE`** - time to peak deceleration from the **Off Throttle** event
+
+This modular naming convention ensures every feature is able to be interpreted and traced back to its functional purpose within the lap.
+
+By following this convention, users may efficiently locate, filter, and compare driver performance metrics across moments, laps, and turns, enabling consistent and replicable analysis across future model iterations.
 
 ### Analysis and modelling (planned)  
 
@@ -148,12 +207,12 @@ Our next step is to evaluate driver performance through Turns 1–3, comparing h
 ### 4.2 Dataset Construction  
 
 - Interpreted dataset structure  
-- Visualized variables and circuit geometry  
+- Visualised variables and circuit geometry  
 - Cleaned data (removed off-track laps, NaNs, and slowest drivers)  
 
 ### 4.3 Next Steps  
 
-- Finalize feature engineering  
+- Finalise feature engineering  
 - Develop and test models for driver performance analysis  
 - Evaluate results and compare across drivers  
 
