@@ -166,10 +166,10 @@ The following documentation expands on our engineered features by defining two k
 
 #### 3.6.1. Moments
 
-Each **Moment** represents a key behavioural event that occurs during a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
+**Moments** represent key behavioural or mechanical events that occurs durisng a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
 
 | **Type of Moment** | **Moment** | **Code** | **Time-to-Extrema** | **Description** |
-|--------------------:|------------------------:|-----------------------:|--------------------:|----------------:|
+|--------------------|------------------------|-----------------------|--------------------|----------------|
 | Variable | First Brake | `BP` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
 | Variable | End Brake | `brake_end` | Yes | Marks the release of braking input |
 | Variable | Start Steering | `SS1`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
