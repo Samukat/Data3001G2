@@ -84,3 +84,46 @@ def interpolate_time_atime(df, target):
         })
 
     return pd.DataFrame(results)
+
+
+
+def interpolate_at_distance(df, distance_target, features=["CURRENTLAPTIMEINMS"]):
+    results = []
+    grouped = df.groupby(["SESSIONUID", "CURRENTLAPNUM"])
+
+    for (session, lap), L in grouped:
+        L = L.sort_values("LAPDISTANCE").copy()
+
+        # find the two points surrounding the target distance
+        before = L[L["LAPDISTANCE"] <= distance_target].tail(1)
+        after = L[L["LAPDISTANCE"] >= distance_target].head(1)
+
+        # Check if we have valid before/after points
+        if before.empty or after.empty:
+            continue
+
+        result = {
+            "SESSIONUID": session,
+            "CURRENTLAPNUM": lap,
+            "target_distance": distance_target
+        }
+
+        # If exact match, no interpolation needed
+        if before["LAPDISTANCE"].values[0] == after["LAPDISTANCE"].values[0]:
+            for feature in features:
+                result[f"interpolated_{feature}"] = before[feature].values[0]
+        else:
+            # Calculate interpolation ratio based on LAPDISTANCE
+            d0, d1 = before["LAPDISTANCE"].values[0], after["LAPDISTANCE"].values[0]
+            ratio = (distance_target - d0) / (d1 - d0)
+
+            # Interpolate each requested feature
+            for feature in features:
+                if feature not in before.columns or feature not in after.columns:
+                    continue
+                v0, v1 = before[feature].values[0], after[feature].values[0]
+                result[f"interpolated_{feature}"] = v0 + ratio * (v1 - v0)
+
+        results.append(result)
+
+    return pd.DataFrame(results)

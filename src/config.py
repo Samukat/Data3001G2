@@ -41,9 +41,15 @@ CAR_BUFFER = 0.53
 INVALID_DISTANCE_START = 350
 INVALID_DISTANCE_END = 600
 
-# Track parameters
-# TRACK_WIDTH_THRESHOLD = 15.0
-# APEX_DISTANCE_THRESHOLD = 50.0
-
 # Data cleaning
 NA_SUBSET_COLS = ["M_WORLDPOSITIONX_1", "M_WORLDPOSITIONY_1"]
+
+FEATURES = [
+       'SPEED','THROTTLE', 'STEER', 'BRAKE', 'CURRENTLAPTIMEINMS',
+       'LAPDISTANCE', 'WORLDPOSITIONX', 'WORLDPOSITIONY',
+       'WORLDFORWARDDIRX', 'WORLDFORWARDDIRY', 'YAW', 'PITCH',
+       'ROLL', 'left_dist', 'right_dist', 'l_width',
+       'r_width', 'dist_apex_1', 'dist_apex_2', 'angle_to_apex1',
+       'angle_to_apex2', 'proj_from_ref'
+]
+
