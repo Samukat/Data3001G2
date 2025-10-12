@@ -86,7 +86,7 @@ For example:
 
 - **`BP_STEER`** - steering angle recorded at the **First Brake** moment
 - **`FT1_APEX1_D`** - distance from the car to the first apex when **Start Throttle** occurs
-- **`TM_YAW`** - yaw rotation (rate of directional change) measured at the **Middle Turning Point** 
+- **`TM_YAW`** - yaw rotation (rate of directional change) measured at the **Middle Turning Point**
 - **`ET1_TE`** - time to peak deceleration from the **Off Throttle** event
 
 This modular naming convention ensures every feature is able to be interpreted and traced back to its functional purpose within the lap.
@@ -186,6 +186,8 @@ This feature serves two purposes:
 | :-: |
 | *Figure 3. Track width near corner (TBA - Index to be replaced with distance)* |
 
+This method was also used to caluclate the *ref-line feature*; how far the car was to the sample refrence line given.
+
 #### 3.5.2. Off track
 
 To identify when cars went off track, we calculated each car’s perpendicular distance from both the left and right track boundaries and summed these distances. If the total distance exceeded the width of the track at that point, plus a buffer accounting for the car’s width, the car was considered off track.  
@@ -203,7 +205,15 @@ We chose the target lap distance 900 to be the point where we determine drivers�
 It is also to note that by choosing a later point, rather than just after Turn 2, we optimise two objectives simultaneously: maximising exit speed from the corner and minimising the elapsed time to complete the run into Turn 3. This works because exit speed and segment time are inherently linked, so optimising the target point jointly improves both objectives simultaneously.
 
 **(TBA - CODE )**
-We constructed new features (**see 2.2.2.**) to capture driver behaviour and vehicle dynamics more explicitly. These include braking and acceleration zones, steering angles, and measures of cornering precision. Each feature was designed as a separate transformation so that the pipeline can flexibly add or remove features depending on modelling needs. 
+We constructed new features (**see 2.2.2.**) to capture driver behaviour and vehicle dynamics more explicitly. These include braking and acceleration zones, steering angles, and measures of cornering precision. Each feature was designed as a separate transformation so that the pipeline can flexibly add or remove features depending on modelling needs.
+
+#### 3.6.0 Linear interpolation
+
+To construct moments corresponding to lap distances that were not explicitly defined (e.g., the moments at 360 m, 430 m, 530 m, the target of 900 m, and the midpoint of the turn), linear interpolation was applied. The two closest points to the target distance were identified, and their values were used to estimate the intermediate moment through a weighted linear combination based on their relative distances.
+
+#### 3.6.2 Apex moments
+
+To determine the apex moments, the point closest to each apex was identified for every lap and designated as the moment. The lap distance at this point was then recorded as a unique identifier for that lap, serving as the reference for generating the complete moment data.
 
 ### 3.7. Analysis and modelling (planned)  
 
