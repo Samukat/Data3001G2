@@ -15,11 +15,8 @@ def moment_generator(data, moment_name, feature_names, moment_LD, extrema_LD = N
     ### the row that you are adding to our new dataframe should be at at a lap_distance from the moment_LD dataframe (a dataframe where the index is the lap_id, the column is the lap distance)
 
     results = []
-    # print(md)
 
     for lap_id, target_LD in moment_LD.items():
-        # print(len(moment_LD))
-        # print(lap_id)
         # Extract this lap's data
         lap_data = data[data["lap_id"] == lap_id]
         if lap_data.empty or pd.isna(target_LD):
@@ -37,19 +34,16 @@ def moment_generator(data, moment_name, feature_names, moment_LD, extrema_LD = N
 
             for feat in feature_names:
                 entry[f"{moment_name}_{feat}"] = row.get(feat, np.nan)
-        
+
         else:
             ### THESE ARE THE ROWS THAT NEED INTERPOLATING AT THAT DISTANCE
             interpolated = interpolate_at_distance(lap_data, target_LD, features=feature_names)
-            
             if not interpolated.empty:
                 for feat in feature_names:
                     entry[f"{moment_name}_{feat}"] = interpolated[f"interpolated_{feat}"].values[0]
             else:
                 for feat in feature_names:
                     entry[f"{moment_name}_{feat}"] = np.nan
-        
-        
 
         # For extrema
         if extrema_LD is not None and lap_id in extrema_LD.index:
@@ -58,12 +52,11 @@ def moment_generator(data, moment_name, feature_names, moment_LD, extrema_LD = N
                 idx_extrema = (lap_data["LAPDISTANCE"] - extrema_target).abs().idxmin()
                 extrema_row = lap_data.loc[idx_extrema]
                 entry[f"{moment_name}_ext_LAPDISTANCE"] = extrema_row.get("LAPDISTANCE", np.nan)
-                entry[f"{moment_name}_ext_TIMETOINMS"] = extrema_row.get("CURRENTLAPTIMEINMS") - row.get("CURRENTLAPTIMEINMS")
+                entry[f"{moment_name}_ext_TIMETOINMS"] = extrema_row.get("CURRENTLAPTIMEINMS") - entry.get(f"{moment_name}_CURRENTLAPTIMEINMS")
 
         results.append(entry)
 
     # Return as DataFrame
-    # print(pd.DataFrame(results))
     return pd.DataFrame(results).set_index("lap_id")
 
 
