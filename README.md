@@ -57,7 +57,7 @@ The following documentation expands on our engineered features by defining two k
 | Variable | Off Throttle | `THE` | Yes | Indicates when the driver fully releases throttle before entering a corner |
 | Variable | Start Throttle | `THS` | Yes | Marks the moment throttle is reapplied after corner exit |
 | Fixed | Apex (actual) | `APX1`, `APX2` | No | Defines the true geometric apex points of Turns 1 and 2 |
-| Fixed | Distances | `dist_360`, `dist_430`, `dist_530` | No | Reference points from start line |
+| Fixed | Distances | `dist_360`, `dist_430`, `dist_530`, `Target` | No | Reference points from start line, Target at 900m |
 
 Overall, these **Moments** define the critical phases of vehicle behaviour during Turns 1–3 and are used as anchor points for deriving further measurements.
 
@@ -274,4 +274,5 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
