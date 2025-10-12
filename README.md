@@ -47,17 +47,17 @@ The following documentation expands on our engineered features by defining two k
 
 **Moments** represent key behavioural or mechanical events that occurs durisng a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
 
-| **Type of Moment** | **Moment** | **Code** | **Time-to-Extrema** | **Description** |
+| **Type of Moment** | **Moment** | **Code Pattern / Prefix** | **Time-to-Extrema** | **Description** |
 |--------------------|------------------------|-----------------------|--------------------|----------------|
-| Variable | First Brake | `BPS` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
-| Variable | End Brake | `BPE ` | Yes | Marks the release of braking input |
-| Variable | Start Steering | `STS`, `SS2` | No | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
-| Variable | End Steering | `STE`, `ES2` | No | Captures the point where steering angle returns to neutral after a turn |
-| Variable | Middle Turning Point | `STM` | No | Represents the midpoint of steering angle |
-| Variable | Off Throttle | `THE` | Yes | Indicates when the driver fully releases throttle before entering a corner |
-| Variable | Start Throttle | `THS` | Yes | Marks the moment throttle is reapplied after corner exit |
-| Fixed | Apex (actual) | `APX1`, `APX2` | No | Defines the true geometric apex points of Turns 1 and 2 |
-| Fixed | Distances | `dist_360`, `dist_430`, `dist_530`, `Target` | No | Reference points from start line, Target at 900m |
+| Variable | First Brake | `BPS_*` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
+| Variable | End Brake | `BPE_*` | Yes | Marks the release of braking input |
+| Variable | Start Steering | `STS_*` | No | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
+| Variable | End Steering | `STE_*` | No | Captures the point where steering angle returns to neutral after a turn |
+| Variable | Middle Turning Point | `STM_*` | No | Represents the midpoint of steering angle |
+| Variable | Off Throttle | `THE_*` | Yes | Indicates when the driver fully releases throttle before entering a corner |
+| Variable | Start Throttle | `THS_*` | Yes | Marks the moment throttle is reapplied after corner exit |
+| Fixed | Apex (actual) | `APX1_*`, `APX2_*` | No | Defines the true geometric apex points of Turns 1 and 2 |
+| Fixed | Distances | `dist_360_*`, `dist_430_*`, `dist_530_*`, `Target_*` | No | Reference points from start line, Target at 900m |
 
 Overall, these **Moments** define the critical phases of vehicle behaviour during Turns 1–3 and are used as anchor points for deriving further measurements.
 
@@ -80,7 +80,7 @@ Overall, these **Moments** define the critical phases of vehicle behaviour durin
 
 #### <u>How to Read</u>
 
-The **Moments** and **Attributes** tables are designed to be read together. Each feature in the engineered dataset is formed by combining a **Moment code** (indicating *when* the measurement occurs) with an **Attribute suffix** (indicating *what* is being measured).  
+The **Moments** and **Attributes** tables are designed to be read together. Each feature in the engineered dataset is formed by combining a **Moment code Prefix** (indicating *when* the measurement occurs) with an **Attribute suffix** (indicating *what* is being measured).  
 
 For example:
 
@@ -284,6 +284,7 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
 
