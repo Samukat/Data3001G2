@@ -49,15 +49,15 @@ The following documentation expands on our engineered features by defining two k
 
 | **Type of Moment** | **Moment** | **Code** | **Time-to-Extrema** | **Description** |
 |--------------------|------------------------|-----------------------|--------------------|----------------|
-| Variable | First Brake | `BP` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
-| Variable | End Brake | `brake_end` | Yes | Marks the release of braking input |
-| Variable | Start Steering | `SS1`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
-| Variable | End Steering | `ES1`, `ES2` | ? | Captures the point where steering angle returns to neutral after a turn |
-| Variable | Middle Turning Point | `TM` | No | Represents the midpoint of steering angle |
-| Variable | Off Throttle | `ET1` | Yes | Indicates when the driver fully releases throttle before entering a corner |
-| Variable | Start Throttle | `FT1` | Yes | Marks the moment throttle is reapplied after corner exit |
-| Fixed | Apex (actual) | `APEX1`, `APEX2` | No | Defines the true geometric apex points of Turns 1 and 2 |
-| Fixed | Distances | `CP360`, `CP430`, `CP530`, `CP900` | No | Reference points from start line |
+| Variable | First Brake | `BPS` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
+| Variable | End Brake | `BPE ` | Yes | Marks the release of braking input |
+| Variable | Start Steering | `STS`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
+| Variable | End Steering | `STE`, `ES2` | ? | Captures the point where steering angle returns to neutral after a turn |
+| Variable | Middle Turning Point | `STM` | No | Represents the midpoint of steering angle |
+| Variable | Off Throttle | `THE` | Yes | Indicates when the driver fully releases throttle before entering a corner |
+| Variable | Start Throttle | `THS` | Yes | Marks the moment throttle is reapplied after corner exit |
+| Fixed | Apex (actual) | `APX1`, `APX2` | No | Defines the true geometric apex points of Turns 1 and 2 |
+| Fixed | Distances | `dist_360`, `dist_430`, `dist_530`, `Target` | No | Reference points from start line, Target at 900m |
 
 Overall, these **Moments** define the critical phases of vehicle behaviour during Turns 1–3 and are used as anchor points for deriving further measurements.
 
@@ -284,3 +284,5 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
+
