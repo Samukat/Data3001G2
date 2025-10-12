@@ -51,8 +51,8 @@ The following documentation expands on our engineered features by defining two k
 |--------------------|------------------------|-----------------------|--------------------|----------------|
 | Variable | First Brake | `BPS` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
 | Variable | End Brake | `BPE ` | Yes | Marks the release of braking input |
-| Variable | Start Steering | `STS`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
-| Variable | End Steering | `STE`, `ES2` | ? | Captures the point where steering angle returns to neutral after a turn |
+| Variable | Start Steering | `STS`, `SS2` | No | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
+| Variable | End Steering | `STE`, `ES2` | No | Captures the point where steering angle returns to neutral after a turn |
 | Variable | Middle Turning Point | `STM` | No | Represents the midpoint of steering angle |
 | Variable | Off Throttle | `THE` | Yes | Indicates when the driver fully releases throttle before entering a corner |
 | Variable | Start Throttle | `THS` | Yes | Marks the moment throttle is reapplied after corner exit |
@@ -284,5 +284,6 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
 
 
