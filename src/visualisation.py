@@ -144,9 +144,9 @@ def plot_lap(data, track_left, track_right, turns,
     scatter = ax.scatter(data[x_col], data[y_col], c=data[color_col],
                          s=3, cmap=cmap, label="Lap Path")
     ax.scatter(tl_near["WORLDPOSX"], tl_near["WORLDPOSY"],
-               s=2, color="red", label="Track Left", )
+               s=1, color="red", label="Track Left", )
     ax.scatter(tr_near["WORLDPOSX"], tr_near["WORLDPOSY"],
-               s=2, color="red", alpha=0.7, label="Track Right")
+               s=1, color="red", alpha=0.7, label="Track Right")
     ax.scatter(apex_near["APEX_X1"], apex_near["APEX_Y1"],
                s=25, color="black", alpha=0.7, label="Apex")
 

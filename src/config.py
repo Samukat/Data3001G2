@@ -53,3 +53,5 @@ FEATURES = [
        'angle_to_apex2', 'proj_from_ref'
 ]
 
+SET_DISTANCES = [360, 430, 530]
+

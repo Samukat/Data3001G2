@@ -66,6 +66,7 @@ def moment_generator(data, moment_name, feature_names, moment_LD, extrema_LD = N
     # print(pd.DataFrame(results))
     return pd.DataFrame(results).set_index("lap_id")
 
+
 def get_throttle_points(df, distance_range=(10, 710), lift_threshold=0.02):
     """
     Find when the driver first lifts off the throttle, the minimum throttle afterwards,
@@ -156,7 +157,6 @@ def get_throttle_points(df, distance_range=(10, 710), lift_threshold=0.02):
     return pd.DataFrame(results)
 
 
-
 def get_braking_points(df, distance_range = (10,800)):
     results =[]
 
@@ -232,7 +232,7 @@ def get_braking_points(df, distance_range = (10,800)):
     return pd.DataFrame(results)
 
 
-def find_apex_lapdistances(data, apex_columns = ["dist_apex_1", "dist_apex_2"]):
+def get_apex_points(data, apex_columns = ["dist_apex_1", "dist_apex_2"]):
     """
     Find the LAPDISTANCE where each apex distance column is minimized for each lap.
     """
@@ -253,3 +253,93 @@ def find_apex_lapdistances(data, apex_columns = ["dist_apex_1", "dist_apex_2"]):
         results.append(entry)
     
     return pd.DataFrame(results).set_index("lap_id")
+
+
+def get_steering_points(df, distance_range = (10,800)):
+    results=[]
+
+    for lap_id, group in df.groupby("lap_id"):
+        group = group.sort_values("LAPDISTANCE").reset_index(drop=True)
+        group = group[(group["LAPDISTANCE"] >= distance_range[0]) & (group["LAPDISTANCE"] <= distance_range[1])]
+
+
+        if group["STEER"].isna().all():
+            results.append({
+            'lap_id': lap_id,
+            'first_steer_LD': None,
+            'max_pos_angle_steer_LD': None,
+            'middle_TP_LD': None,
+            'max_neg_LD': None,
+            'end_steer_LD': None
+            })
+            continue
+
+        max_pos_idx = group["STEER"].idxmax()
+        max_neg_idx = group["STEER"].idxmin()
+
+        max_pos_angle_LD = group.loc[max_pos_idx, "LAPDISTANCE"]
+        max_neg_angle_LD = group.loc[max_neg_idx, "LAPDISTANCE"]
+
+        before_max_pos = group.loc[:group.index.get_loc(max_pos_idx)]
+        zero_steer = before_max_pos[np.abs(before_max_pos["STEER"]) <= 0.01 ]
+
+        if not zero_steer.empty:
+            first_steer_LD = zero_steer["LAPDISTANCE"].iloc[-1]
+        else:
+            first_steer_LD = None
+
+        after_max_pos = group.iloc[group.index > group.index.get_loc(max_pos_idx)]
+        after_max_neg = group.iloc[group.index > group.index.get_loc(max_neg_idx)]
+
+        middle_steering = None
+        steer_end_LD = None
+
+        if not after_max_pos.empty:    
+            steer_series = after_max_pos["STEER"]
+            sign_change = steer_series.shift(1) * steer_series < 0
+
+            if sign_change.any():
+                change_idx = sign_change.idxmax()
+                idx_before = steer_series.index.get_loc(change_idx) - 1
+
+                if idx_before >= 0:
+                    idx_A = steer_series.index[idx_before]
+                    idx_B = change_idx
+                    steer_A = group.loc[idx_A, "STEER"]
+                    steer_B = group.loc[idx_B, "STEER"]
+                    LD_A = group.loc[idx_A, "LAPDISTANCE"]
+                    LD_B = group.loc[idx_B, "LAPDISTANCE"]
+
+                    middle_steering = LD_A + (LD_B - LD_A) * (steer_A) / (steer_A - steer_B)
+
+        if not after_max_neg.empty:
+            steer_series = after_max_neg["STEER"]
+            sign_change = steer_series.shift(1) * steer_series < 0
+
+            if sign_change.any():
+                change_idx = sign_change.idxmax()
+                idx_before = steer_series.index.get_loc(change_idx) - 1
+
+                if idx_before >= 0:
+                    idx_A = steer_series.index[idx_before]
+                    idx_B = change_idx
+                    steer_A = group.loc[idx_A, "STEER"]
+                    steer_B = group.loc[idx_B, "STEER"]
+                    LD_A = group.loc[idx_A, "LAPDISTANCE"]
+                    LD_B = group.loc[idx_B, "LAPDISTANCE"]
+
+                    steer_end_LD = LD_A + (LD_B - LD_A) * (steer_A) / (steer_A - steer_B)
+
+        results.append({
+        'lap_id': lap_id,
+        'first_steer_LD': first_steer_LD,
+        'max_pos_angle_steer_LD': max_pos_angle_LD,
+        'middle_TP_LD': middle_steering,
+        'max_neg_LD': max_neg_angle_LD,
+        'end_steer_LD': steer_end_LD
+        })
+
+    return pd.DataFrame(results)
+
+
+
