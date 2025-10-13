@@ -50,7 +50,7 @@ The following documentation expands on our engineered features by defining two k
 | **Type of Moment** | **Moment** | **Code** | **Time-to-Extrema** | **Description** |
 |--------------------|------------------------|-----------------------|--------------------|----------------|
 | Variable | First Brake | `BPS` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
-| Variable | End Brake | `BPE ` | Yes | Marks the release of braking input |
+| Variable | End Brake | `BPE` | Yes | Marks the release of braking input |
 | Variable | Start Steering | `STS`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
 | Variable | End Steering | `STE`, `ES2` | ? | Captures the point where steering angle returns to neutral after a turn |
 | Variable | Middle Turning Point | `STM` | No | Represents the midpoint of steering angle |
@@ -67,15 +67,17 @@ Overall, these **Moments** define the critical phases of vehicle behaviour durin
 
 | **Attribute** | **Code Pattern / Suffix** | **Type / Shape** | **Description** |
 |----------------|---------------------------|------------------|-----------------|
-| Lap distance | `*_LD` | Scalar (m) | Linear distance travelled at each moment |
-| Position X/Y | `*_X`, `*_Y` | Scalar | Car coordinates used to reconstruct trajectories |
-| Timestamp / Lap time | `*_T` | Scalar | Captures temporal alignment of events |
-| Relative displacement | `*_R` | Scalar (m) | Perpendicular offset from racing line or track edge |
-| Distance to apex | `*_APEX1_D`, `*_APEX2_D` | Scalar (m) | Euclidean distance from car position to turn apex |
-| Angle to apex | `*_APEX1_A`, `*_APEX2_A` | Angle | Angular offset between car heading and apex vector |
+| Lap distance | `*_LAPDISTANCE` | Scalar (m) | Linear distance travelled at each moment |
+| Position X/Y, Forward vector | `*_WORLDPOSITION(X/Y)`, `*_WORLDFORWARDDIR(X/Y)` | Scalar | Car coordinates used to reconstruct trajectories |
+| Timestamp / Lap time | `*_CURRENTLAPTIMEINMS` | Scalar (ms) | Captures temporal alignment of events |
+| Relative displacement | `*_proj_from_ref`, `*_(left/right)_dist` | Scalar (m) | Perpendicular offset from racing line or track edge |
+| Distance to apex | `*_dist_apex_1`, `*_dist_apex_2` | Scalar (m) | Euclidean distance from car position to turn apex |
+| Angle to apex | `*_angle_to_apex1`, `*_angle_to_apex2` | Angle | Angular offset between car heading and apex vector |
 | Steering angle | `*_STEER` | Angle | Direction and intensity of steering input |
-| Velocity vs tire direction | `*_VEL_ANG` | Angle | Difference between velocity vector and tyre direction |
-| Time to extrema | `*_TE` | Scalar | Time difference between current frame and the feature’s peak event |
+| Steering angle | `*_SPEED` | Scalar (km/h) | Speed of car in km/h |
+| Steering angle | `*_BRAKE` | Scalar (0-1) | Intensity of brake input |
+| Steering angle | `*_THROTTLE` | Scalar (0-1)| Intensity of throttle input |
+| Time to extrema | `*_ext_TIMETOINMS`, `*_ext_LAPDISTANCE` | Scalar | Time difference / lapdistance between current frame and the feature’s peak event |
 | Rotational forces | `*_PITCH`, `*_YAW`, `*_ROLL` | Scalar | Captures vehicle rotation around each axis to analyse corner dynamics |
 
 #### <u>How to Read</u>
@@ -228,16 +230,23 @@ Our next step is to evaluate driver performance through Turns 1–3, comparing h
 - Conducted literature review on driver behavior, braking/throttle strategies, and racing simulations  
 - Identified limitations in existing studies  
 
-### 4.2. Dataset Construction  
+### 4.2 Other notes
+
+We aimed to create a Velocity vs Tire Direction feature representing the difference between the vehicle’s velocity vector and tire direction. However, this was not feasible due to missing or null velocity vector data, preventing reliable construction of the feature.
+
+Additionally, some cells in the final dataset remain NaN, as certain laps lacked specific data such as braking or throttle inputs. These laps were retained since they still contain valuable information that can be leveraged in modeling. Any further handling of missing values can be efficiently performed during the modeling stage.
+
+Finally, invalid laps (where the car went off track) were also retained, marked with a dedicated flag, to preserve potentially useful behavioral and contextual data.
+
+### 4.3. Dataset Construction  
 
 - Interpreted dataset structure  
 - Visualized variables and circuit geometry  
 - Cleaned data (removed off-track laps, NaNs, and other filtering)
 - Constructed some basic filters (e.g. angle and distance to apex)  
 
-### 4.3. Next Steps  
+### 4.4. Next Steps  
 
-- Finalize feature engineering  
 - Develop and test models for driver performance analysis  
 - Evaluate results and compare across drivers  
 
@@ -284,5 +293,3 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
-
-
