@@ -47,12 +47,12 @@ The following documentation expands on our engineered features by defining two k
 
 **Moments** represent key behavioural or mechanical events that occurs durisng a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
 
-| **Type of Moment** | **Moment** | **Code** | **Time-to-Extrema** | **Description** |
+| **Type of Moment** | **Moment** | **Code Pattern / Prefix** | **Time-to-Extrema** | **Description** |
 |--------------------|------------------------|-----------------------|--------------------|----------------|
 | Variable | First Brake | `BPS` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
 | Variable | End Brake | `BPE` | Yes | Marks the release of braking input |
-| Variable | Start Steering | `STS`, `SS2` | ? | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
-| Variable | End Steering | `STE`, `ES2` | ? | Captures the point where steering angle returns to neutral after a turn |
+| Variable | Start Steering | `STS` | No | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
+| Variable | End Steering | `STE` | No | Captures the point where steering angle returns to neutral after a turn |
 | Variable | Middle Turning Point | `STM` | No | Represents the midpoint of steering angle |
 | Variable | Off Throttle | `THE` | Yes | Indicates when the driver fully releases throttle before entering a corner |
 | Variable | Start Throttle | `THS` | Yes | Marks the moment throttle is reapplied after corner exit |
@@ -82,7 +82,7 @@ Overall, these **Moments** define the critical phases of vehicle behaviour durin
 
 #### <u>How to Read</u>
 
-The **Moments** and **Attributes** tables are designed to be read together. Each feature in the engineered dataset is formed by combining a **Moment code** (indicating *when* the measurement occurs) with an **Attribute suffix** (indicating *what* is being measured).  
+The **Moments** and **Attributes** tables are designed to be read together. Each feature in the engineered dataset is formed by combining a **Moment code Prefix** (indicating *when* the measurement occurs) with an **Attribute suffix** (indicating *what* is being measured).  
 
 For example:
 
@@ -293,3 +293,4 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
