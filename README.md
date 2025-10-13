@@ -213,6 +213,12 @@ We constructed new features (**see 2.2.2.**) to capture driver behaviour and veh
 
 To construct moments corresponding to lap distances that were not explicitly defined (e.g., the moments at 360 m, 430 m, 530 m, the target of 900 m, and the midpoint of the turn), linear interpolation was applied. The two closest points to the target distance were identified, and their values were used to estimate the intermediate moment through a weighted linear combination based on their relative distances.
 
+#### 3.6.0.1 Throttle moments
+
+To the throttle moments and extract key throttle-related moments from each lap we developed the get_throttle_points function. For each lap, we identify when the driver first lifts off the throttle, the minimum throttle reached afterwards, when they begin reapplying throttle, and when throttle returns to its maximum. These points capture important aspects of driver behavior, such as corner entry, mid-corner control, and corner exit. A small lift threshold was used to filter out minor fluctuations while preserving meaningful changes, and any laps with missing throttle data are still included to retain other useful features.
+
+This was done by first sorting each lap by distance and restricting the analysis to a specified distance range (Near the turn). Differences in consecutive throttle values were then computed to detect lift-offs and reapplications, and the corresponding lap distances for minimum and maximum throttle points were recorded for each lap. (We used a threshold value of 0.02 to avoid noise).
+
 #### 3.6.2 Apex moments
 
 To determine the apex moments, the point closest to each apex was identified for every lap and designated as the moment. The lap distance at this point was then recorded as a unique identifier for that lap, serving as the reference for generating the complete moment data.
@@ -293,4 +299,3 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
-
