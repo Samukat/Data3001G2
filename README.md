@@ -51,8 +51,8 @@ The following documentation expands on our engineered features by defining two k
 |--------------------|------------------------|-----------------------|--------------------|----------------|
 | Variable | First Brake | `BPS` | Yes | Captures the point at which braking is first initiated before Turn 1 or 2 |
 | Variable | End Brake | `BPE` | Yes | Marks the release of braking input |
-| Variable | Start Steering | `STS` | No | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
-| Variable | End Steering | `STE` | No | Captures the point where steering angle returns to neutral after a turn |
+| Variable | Start Steering | `STS` | Yes | Identifies the first notable steering input, signalling the driver’s approach to turn-in |
+| Variable | End Steering | `STE` | Yes | Captures the point where steering angle returns to neutral after a turn |
 | Variable | Middle Turning Point | `STM` | No | Represents the midpoint of steering angle |
 | Variable | Off Throttle | `THE` | Yes | Indicates when the driver fully releases throttle before entering a corner |
 | Variable | Start Throttle | `THS` | Yes | Marks the moment throttle is reapplied after corner exit |
@@ -208,7 +208,11 @@ It is also to note that by choosing a later point, rather than just after Turn 2
 
 #### 3.6. Moment Engineering
 
-#### 3.6.1. Braking points
+#### 3.6.1 Linear interpolation
+
+To construct moments corresponding to lap distances that were not explicitly defined (e.g., the moments at 360 m, 430 m, 530 m, the target of 900 m, and the midpoint of the turn), linear interpolation was applied. The two closest points to the target distance were identified, and their values were used to estimate the intermediate moment through a weighted linear combination based on their relative distances.
+
+#### 3.6.2 Braking points
 
 We constructed 4 new features using the BRAKE measurements. We attained the lap distance for when the driver engaged maximum braking (max_brake_LD) over the lap distance range between 10 and 800. To find the initial braking point (bp_ld), we used the maximum braking point to backtrack and find the lap distance when the BRAKE variable is 0. If there is no data for when BRAKE is 0, then the last point before maximum braking point is used and otherwise given a NaN value. We attained the lap distance where the driver disengages from maximum braking (brake_decrease_LD) by finding the last measurement before the drop in BRAKE from maximum. The lap distance for when the driver completely stops braking (brake_end_LD) was found by the first measurement where BRAKE is 0 after the drop from maximum braking.
 
@@ -216,20 +220,15 @@ We constructed 4 new features using the BRAKE measurements. We attained the lap 
 
 We constructed 5 new features using the STEER measurements. We attained the lap distance for maximum positive angle (max_pos_angle_LD) and the maximum negative angle (max_neg_angle_LD) for each lap by finding the maximum and minimum value of STEER respectively. To find the initial steering for turn 1 (first_steer_LD), we used the maximum positive angle point to backtrack and find the lap distance of the first measurement when the STEER variable is less than 0.01. We did not use the points where STEER is zero to take into acocunt slight changes drivers made on the straight before turn 1. The lap distance where the driver returned back to the angle being 0 (middle_steering) was found by detetcting when the sign changes in the steer angle for measurements between the maximum positive angle and the maximum negative angle. Then the two points around the change were used to linearly interpolate the lap distance around which the steering would have been 0. The lap distance for when the steering angle returns to 0 after turn 2 (steer_end_LD) was calculated exactly the same way as middle_steering.
 
-**(TBA - CODE )**
 We constructed new features (**see 2.2.2.**) to capture driver behaviour and vehicle dynamics more explicitly. These include braking and acceleration zones, steering angles, and measures of cornering precision. Each feature was designed as a separate transformation so that the pipeline can flexibly add or remove features depending on modelling needs.
 
-#### 3.6.0 Linear interpolation
-
-To construct moments corresponding to lap distances that were not explicitly defined (e.g., the moments at 360 m, 430 m, 530 m, the target of 900 m, and the midpoint of the turn), linear interpolation was applied. The two closest points to the target distance were identified, and their values were used to estimate the intermediate moment through a weighted linear combination based on their relative distances.
-
-#### 3.6.0.1 Throttle moments
+#### 3.6.4 Throttle moments
 
 To the throttle moments and extract key throttle-related moments from each lap we developed the get_throttle_points function. For each lap, we identify when the driver first lifts off the throttle, the minimum throttle reached afterwards, when they begin reapplying throttle, and when throttle returns to its maximum. These points capture important aspects of driver behavior, such as corner entry, mid-corner control, and corner exit. A small lift threshold was used to filter out minor fluctuations while preserving meaningful changes, and any laps with missing throttle data are still included to retain other useful features.
 
 This was done by first sorting each lap by distance and restricting the analysis to a specified distance range (Near the turn). Differences in consecutive throttle values were then computed to detect lift-offs and reapplications, and the corresponding lap distances for minimum and maximum throttle points were recorded for each lap. (We used a threshold value of 0.02 to avoid noise).
 
-#### 3.6.2 Apex moments
+#### 3.6.5 Apex moments
 
 To determine the apex moments, the point closest to each apex was identified for every lap and designated as the moment. The lap distance at this point was then recorded as a unique identifier for that lap, serving as the reference for generating the complete moment data.
 
@@ -281,6 +280,16 @@ Future work may include:
 - Integrating external racing telemetry datasets  
 - Building interactive simulations  
 
+To get the final dataset run the python file "run_pipeline" ensuring the required data in within the data folder, see `config.py`.
+
+```
+data/UNSW F12024.csv
+data/f1sim-ref-left.csv
+data/f1sim-ref-right.csv
+data/f1sim-ref-line.csv
+data/f1sim-ref-turns.csv
+```
+
 ---
 
 ## 6. Contributors  
@@ -309,4 +318,3 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
-
