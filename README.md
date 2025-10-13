@@ -318,3 +318,13 @@ For questions or suggestions, contact:
 - Samuel Katz – <z5479193@ad.unsw.edu.au>  
 
 ---
+
+## 8. Bibiliography
+
+ - Jain, A. and Morari, M. (2020). Computing the racing line using Bayesian optimization, Cornell University Available at: https://arxiv.org/abs/2002.04794
+ - Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: https://digitalcommons.cwu.edu/source/2022/COTS/99/.
+
+
+
+‌
+
