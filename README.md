@@ -10,7 +10,7 @@ Performances in motorsports are dictated by a range of key factors regarding the
 
 Previous research on optimal driving strategies has often relied on simple simulations or narrow datasets. In this project, we analyse a **Formula One simulation** with a high-resolution dataset capturing vehicle behaviour through Turns 1 and 2 at the Melbourne Albert Park circuit. Our primary aim is to determine the optimum behavioural car and driving conditions at which the vehicle exits Turn 2, based on the time to reach a fixed distance point marginally further down the track (900m).
 
-The setup involves acquiring multiple reference datasets describing the race circuit and lap performance. The proposed final dataframe integrates these into engineered lap-level features, capturing key performance indicators (braking point, throttle point, etc) alongside aggregated measures (e.g. total throttle applied within defined segments) to further complement the evaluation of performances. These tasks highlight a significant initial step in bridging the gap between model driven optimisation and real world telemetry analysis in the modern motorsport landscape.
+The setup involves acquiring multiple reference datasets describing the race circuit and lap performance. The proposed final dataframe integrates these into engineered lap-level features, capturing key performance indicators (braking point, throttle point, etc) alongside aggregated measures (e.g. total throttle applied within defined segments) to further complement the evaluation of performances. These tasks highlight a significant initial step in bridging the gap between model driven optimisation and real-world telemetry analysis in the modern motorsport landscape.
 
 ---
 
@@ -41,7 +41,7 @@ The final data product is a lap-level dataset, with each row representing a sing
 
 #### 2.2.2. Table of Features
 
-The following documentation expands on our engineered features by defining two key layers of our feature design - **Moments** and **Attrbutes** - and illustrate how these interact in our dataframe.
+The following documentation expands on our engineered features by defining two key layers of our feature design - **Moments** and **Attributes** - and illustrate how these interact in our dataframe.
 
 #### <u>Moments</u>
 
@@ -76,8 +76,8 @@ Overall, these **Moments** define the critical phases of vehicle behaviour durin
 | Steering angle | `*_STEER` | Angular | Direction and intensity of steering input |
 | Steering angle | `*_SPEED` | Scalar (km/h) | Speed of car in km/h |
 | Steering angle | `*_BRAKE` | Scalar (0-1) | Intensity of brake input |
-| Steering angle | `*_THROTTLE` | Scalar (0-1)| Intensity of throttle input |
-| Time to extrema | `*_ext_TIMETOINMS`, `*_ext_LAPDISTANCE` | Scalar | Time difference / lapdistance between current frame and the feature’s peak event |
+| Steering angle | `*_THROTTLE` | Scalar (0-1) | Intensity of throttle input |
+| Time to extrema | `*_ext_TIMETOINMS`, `*_ext_LAPDISTANCE` | Scalar | Time difference / lap distance between current frame and the feature’s peak event |
 | Rotational forces | `*_PITCH`, `*_YAW`, `*_ROLL` | Scalar | Captures vehicle rotation around each axis to analyse corner dynamics |
 
 #### <u>How to Read</u>
@@ -111,11 +111,11 @@ The incoming telemetry contains frame-level observations of driver and vehicle s
 | **Driver Inputs**             | `M_THROTTLE_1`, `M_BRAKE_1`, `M_STEER_1`, `M_GEAR_1`, `M_FRONTWHEELSANGLE`, `M_DRS_1`                                                    | Continuous/Categorical | Evaluates acceleration, braking, cornering, gear shifts, and DRS use                    |
 | **Speed & Engine**            | `M_SPEED_1`, `M_ENGINERPM_1`                                                                                                             | Continuous             | Core performance measures; assess acceleration, straight-line speed, and shift points   |
 | **Brake Temperatures**        | `M_BRAKESTEMPERATURE_FL_1`, `M_BRAKESTEMPERATURE_FR_1`, `M_BRAKESTEMPERATURE_RL_1`, `M_BRAKESTEMPERATURE_RR_1`                           | Continuous (°C)        | Thermal load and braking efficiency; detects imbalance/overheating                      |
-| **Tyre Pressures**            | `M_TYRESPRESSURE_FL_1`, `M_TYRESPRESSURE_FR_1`, `M_TYRESPRESSURE_RL_1`, `M_TYRESPRESSURE_RR_1`                                           | Continuous (psi/kPa)   | Grip and stability; monitors balance and traction                                       |
+| **Tyre Pressures**            | `M_TYRESPRESSURE_FL_1`, `M_TYRESPRESSURE_FR_1`, `M_TYRESPRESSURE_RL_1`, `M_TYRESPRESSURE_RR_1`                                           | Continuous (psi/kPa) | Grip and stability; monitors balance and traction                                       |
 | **Distances**                 | `M_LAPDISTANCE_1`, `M_TOTALDISTANCE_1`                                                                                                   | Continuous (m)         | Aligns telemetry with track position; cumulative mileage tracking                       |
 | **World Position (Car)**      | `M_WORLDPOSITIONX_1`, `M_WORLDPOSITIONY_1`, `M_WORLDPOSITIONZ_1`                                                                         | Continuous             | 3D trajectory mapping for racing line, elevation, and kerbs                             |
 | **World Orientation Vectors** | `M_WORLDFORWARDDIRX_1`, `M_WORLDFORWARDDIRY_1`, `M_WORLDFORWARDDIRZ_1`, `M_WORLDRIGHTDIRX_1`, `M_WORLDRIGHTDIRY_1`, `M_WORLDRIGHTDIRZ_1` | Continuous             | Car heading/orientation in 3D space; used in angle-to-apex, yaw/roll calculations       |
-| **Car Angles**                | `M_YAW_1`, `M_PITCH_1`, `M_ROLL_1`                                                                                                       | Continuous (degrees)   | Captures rotation dynamics - heading, dive/squat, and body roll                         |
+| **Car Angles**                | `M_YAW_1`, `M_PITCH_1`, `M_ROLL_1`                                                                                                       | Continuous (degrees) | Captures rotation dynamics - heading, dive/squat, and body roll                         |
 | **Track Reference Data**      | `FRAME`, `WORLDPOSX`, `WORLDPOSY`, `APEX_X1`, `APEX_Y1`, `CORNER_X1…Y2`, `TURN`                                                          | Mixed                  | Defines track geometry, apex points, corners, and reference frames                      |
 | **Engineered Features**       | `dist_apex_1`, `dist_apex_2`, `angle_to_apex1`, `angle_to_apex2`, `track_width`, `left_dist`, `right_dist`, `l_width`, `r_width`, `in`   | Continuous/Binary      | Derived metrics for racing line, corner approach, and track usage evaluation            |
 
@@ -156,9 +156,9 @@ We began by cleaning the data, first removing unnecessary columns and renaming t
 
 We therefore removed all data from tracks other than Albert Park, and further excluded datapoints beyond Turn 3, since our focus is on Turns 1 and 2 and the overtaking section between Turns 2 and 3. This was done by filtering for laps with a current lap distance below 1200m. Note that this distance exceeds the target lap point of 900m, allowing us to conduct both exploratory data analysis (EDA) to determine why 900m was optimal, as well as perform linear interpolation around this point.
 
-Finally, we performed checks to handle missing values in the dataset, primarily for the car position variables. Rows with missing coordinates totaled around 68,000
+Finally, we performed checks to handle missing values in the dataset, primarily for the car position variables. Rows with missing coordinates totalled around 68,000.
 
-Further laps were removed as dicussed in the *Removing unsuitable laps* section.
+Further laps were removed as discussed in the *Removing unsuitable laps* section.
 
 ### 3.3. Track visualisation  
 
@@ -188,13 +188,13 @@ This feature serves two purposes:
 | :-: |
 | *Figure 3. Track width near corner (TBA - Index to be replaced with distance and maybe add where the apexes are as well? - (Sam))* |
 
-This method was also used to caluclate the *ref-line feature*; how far the car was to the sample reference line given. This was done according to the paper by Jain and Morari in 2020<sup>(1)</sup> in which they used Bayesian optimisation to compute the optimal racing line compared to the given trajectory of the car. This can be used to determine whether the provided reference line is truly the optimum racing line.
+This method was also used to calculate the *ref-line feature*; how far the car was to the sample reference line given. This was done according to the paper by Jain and Morari in 2020<sup>(1)</sup> in which they used Bayesian optimisation to compute the optimal racing line compared to the given trajectory of the car. This can be used to determine whether the provided reference line is truly the optimum racing line.
 
 #### 3.5.2. Off track
 
 To identify when cars went off track, we calculated each car’s perpendicular distance from both the left and right track boundaries and summed these distances. If the total distance exceeded the width of the track at that point, plus a buffer accounting for the car’s width, the car was considered off track.  
 
-Since the provided coordinates do not account for the car’s physical width, we needed to choose an appropriate buffer. The dataset included an `INVALID_LAP` flag indicating whether the car went off track at any point in the lap. We used this flag to test different buffer values and selected the one that maximized the F1 score (Balancing false positives and false negatives) representing what is most likley the same buffer width used in the races / game simulation.
+Since the provided coordinates do not account for the car’s physical width, we needed to choose an appropriate buffer. The dataset included an `INVALID_LAP` flag indicating whether the car went off track at any point in the lap. We used this flag to test different buffer values and selected the one that maximized the F1 score (Balancing false positives and false negatives) representing what is most likely the same buffer width used in the races / game simulation.
 
 | ![alt text](images/image-2.png) |
 | :-: |
@@ -212,7 +212,7 @@ We constructed new features to capture driver behaviour and vehicle dynamics mor
 
 #### 3.6.1 Linear interpolation
 
-To construct moments corresponding to lap distances that were not explicitly defined (e.g., the moments at 360 m, 430 m, 530 m, the target of 900 m, and the midpoint of the turn), linear interpolation was applied. The two closest points to the target distance were identified, and their values were used to estimate the intermediate moment through a weighted linear combination based on their relative distances. Simalrly, linear interpolation was used to determine the steering angles between turn 1 and 2 as well as after turn 2.
+To construct moments corresponding to lap distances that were not explicitly defined (e.g., the moments at 360 m, 430 m, 530 m, the target of 900 m, and the midpoint of the turn), linear interpolation was applied. The two closest points to the target distance were identified, and their values were used to estimate the intermediate moment through a weighted linear combination based on their relative distances. Likewise, linear interpolation was used to determine the steering angles between turn 1 and 2 as well as after turn 2.
 
 #### 3.6.2 Braking points
 
@@ -220,11 +220,11 @@ We constructed 4 new features using the BRAKE measurements. We attained the lap 
 
 #### 3.6.3 Steering points
 
-We constructed 5 new features using the `STEER` measurements. We attained the lap distance for maximum positive angle and the maximum negative angle for each lap by finding the maximum and minimum value of `STEER` respectively. To find the initial steering for turn 1 (`STS`), we used the maximum positive angle point to backtrack and find the lap distance of the first measurement when the `STEER` variable is less than 0.01. We did not use the points where `STEER` is zero to take into acocunt slight changes drivers made on the straight before turn 1. The lap distance where the driver returned back to the angle being 0 (`STM`) was found by detetcting when the sign changes in the steer angle for measurements between the maximum positive angle and the maximum negative angle. Then the two points around the change were used to linearly interpolate the lap distance around which the steering would have been 0. The lap distance for when the steering angle returns to 0 after turn 2 (`STE`) was calculated exactly the same way as middle_steering.
+We constructed 5 new features using the `STEER` measurements. We attained the lap distance for maximum positive angle and the maximum negative angle for each lap by finding the maximum and minimum value of `STEER` respectively. To find the initial steering for turn 1 (`STS`), we used the maximum positive angle point to backtrack and find the lap distance of the first measurement when the `STEER` variable is less than 0.01. We did not use the points where `STEER` is zero to take into account slight changes drivers made on the straight before turn 1. The lap distance where the driver returned back to the angle being 0 (`STM`) was found by detecting when the sign changes in the steer angle for measurements between the maximum positive angle and the maximum negative angle. Then the two points around the change were used to linearly interpolate the lap distance around which the steering would have been 0. The lap distance for when the steering angle returns to 0 after turn 2 (`STE`) was calculated exactly the same way as `STM`.
 
 #### 3.6.4 Throttle moments
 
-For the throttle moments and extract key throttle-related moments from each lap, we developed the `get_throttle_points` function. For each lap, we identify when the driver first lifts off the throttle (`THE`), the minimum throttle reached afterwards, when they begin reapplying throttle (`THS`), and when throttle returns to its maximum. These points capture important aspects of driver behavior, such as corner entry, mid-corner control, and corner exit. A small lift threshold was used to filter out minor fluctuations while preserving meaningful changes, and any laps with missing throttle data are still included to retain other useful features.
+For the throttle moments and extract key throttle-related moments from each lap, we developed the `get_throttle_points` function. For each lap, we identify when the driver first lifts off the throttle (`THE`), the minimum throttle reached afterwards, when they begin reapplying throttle (`THS`), and when throttle returns to its maximum. These points capture important aspects of driver behaviour, such as corner entry, mid-corner control, and corner exit. A small lift threshold was used to filter out minor fluctuations while preserving meaningful changes, and any laps with missing throttle data are still included to retain other useful features.
 
 This was done by first sorting each lap by distance and restricting the analysis to a specified distance range (Near the turn). Differences in consecutive throttle values were then computed to detect lift-offs and reapplications, and the corresponding lap distances for minimum and maximum throttle points were recorded for each lap. (We used a threshold value of 0.02 to avoid noise).
 
@@ -242,16 +242,16 @@ The next step is to evaluate driver performance through Turns 1–3, comparing h
 
 ### 4.1. Planning & Research  
 
-- Conducted literature review on driver behavior, braking/throttle strategies, and racing simulations  
+- Conducted literature review on driver behaviour, braking/throttle strategies, and racing simulations  
 - Identified limitations in existing studies such as the paper by Struthers called Formula One Telemetry Analysis<sup>(2)</sup> where research focused more on use of microprocessors in the Formula 1 simulator for data analysis and data structure construction for real time data graphs rather than analysis and modelling for improved lap performance.
 
 ### 4.2 Other notes
 
 We aimed to create a Velocity vs Tire Direction feature representing the difference between the vehicle’s velocity vector and tire direction. However, this was not feasible due to missing or null velocity vector data, preventing reliable construction of the feature.
 
-Additionally, some cells in the final dataset remain NaN, as certain laps lacked specific data such as braking or throttle inputs. These laps were retained since they still contain valuable information that can be leveraged in modeling. Any further handling of missing values can be efficiently performed during the modeling stage.
+Additionally, some cells in the final dataset remain NaN, as certain laps lacked specific data such as braking or throttle inputs. These laps were retained since they still contain valuable information that can be leveraged in modelling. Any further handling of missing values can be efficiently performed during the modelling stage.
 
-Finally, invalid laps (where the car went off track) were also retained, marked with a dedicated flag, to preserve potentially useful behavioral and contextual data.
+Finally, invalid laps (where the car went off track) were also retained, marked with a dedicated flag, to preserve potentially useful behavioural and contextual data.
 
 ### 4.3. Dataset Construction  
 
