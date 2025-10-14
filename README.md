@@ -141,7 +141,7 @@ The workflow for this project:
 We began by ingesting multiple reference raw datasets that describe the Albert Park circuit:
 
 - The left and right track boundaries (*f1sim-ref-left.csv, f1sim-ref-right.csv*)
-- A refrence racing line (*f1sim-ref-line.csv*)
+- A reference racing line (*f1sim-ref-line.csv*)
 - Apex point data and area for each corner (*f1sim-ref-turns*).
 
  These were combined with the UNSW F1 2024 lap telemetry dataset (UNSW F12024.csv), which contains detailed information about driver inputs (throttle, braking, steering) and car dynamics (speed, gear, RPM, position).  
@@ -162,7 +162,7 @@ Further laps were removed as dicussed in the *Removing unsuitable laps* section.
 
 ### 3.3. Track visualisation  
 
-To verify the data and provide context for later analysis, we reconstructed the circuit by plotting the left and right boundaries alongside the refrence racing line. Apex points were overlaid, and corners were annotated. We then produced zoomed-in visualisations of Turns 1 and 2, since these form the core section of interest.  
+To verify the data and provide context for later analysis, we reconstructed the circuit by plotting the left and right boundaries alongside the reference racing line. Apex points were overlaid, and corners were annotated. We then produced zoomed-in visualisations of Turns 1 and 2, since these form the core section of interest.  
 
 | ![Plot of track we are interested in](images/image-3.PNG) |
 |:--:|
@@ -188,7 +188,7 @@ This feature serves two purposes:
 | :-: |
 | *Figure 3. Track width near corner (TBA - Index to be replaced with distance and maybe add where the apexes are as well? - (Sam))* |
 
-This method was also used to caluclate the *ref-line feature*; how far the car was to the sample refrence line given. This was done according to the paper by Jain and Morari in 2020<sup>(1)</sup> in which they used Bayesian optimisation to compute the optimal racing line compared to the given trajectory of the car. This can be used to determine whether the provided reference line is truly the optimum racing line.
+This method was also used to caluclate the *ref-line feature*; how far the car was to the sample reference line given. This was done according to the paper by Jain and Morari in 2020<sup>(1)</sup> in which they used Bayesian optimisation to compute the optimal racing line compared to the given trajectory of the car. This can be used to determine whether the provided reference line is truly the optimum racing line.
 
 #### 3.5.2. Off track
 
