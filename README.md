@@ -238,7 +238,7 @@ This was done by first sorting each lap by distance and restricting the analysis
 
 #### 3.6.5 Apex moments
 
-To determine the apex moments, the point closest to each apex was identified for every lap and designated as the moment. The lap distance at this point was then recorded as a unique identifier for that lap, serving as the reference for generating the complete moment data.
+Each lap’s apex moments were determined by identifying the points closest to each of the two apexes. The lap distances at these points were then recorded as unique identifiers for their corresponding lap, serving as the reference for generating the complete moment dataset.
 
 ### 3.7. Analysis and modelling (planned)  
 
@@ -331,5 +331,6 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
 
 
