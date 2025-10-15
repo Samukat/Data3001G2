@@ -7,10 +7,11 @@ from pathlib import Path
 
 # Directory paths
 DATAFOLDER = Path("data")
-OUTPUT_FOLDER = Path("data")
+OUTPUT_FOLDER = Path("")
 TRACK_DATA_FOLDER = Path("data")
 
 MIN_POINTS_LAP = 900
+
 
 # Column names
 RELEVANT_COLS = [
@@ -28,7 +29,6 @@ RELEVANT_COLS = [
     "R_STATUS", "LAPTIME", "CURRENTLAPTIME"
 ]
 
-# R_SESSION, R_NAME
 
 # Column renaming dictionary
 RENAME_COLS = {
@@ -45,13 +45,11 @@ INVALID_DISTANCE_END = 600
 NA_SUBSET_COLS = ["M_WORLDPOSITIONX_1", "M_WORLDPOSITIONY_1"]
 
 FEATURES = [
-       'SPEED','THROTTLE', 'STEER', 'BRAKE', 'CURRENTLAPTIMEINMS',
-       'LAPDISTANCE', 'WORLDPOSITIONX', 'WORLDPOSITIONY',
-       'WORLDFORWARDDIRX', 'WORLDFORWARDDIRY', 'YAW', 'PITCH',
-       'ROLL', 'left_dist', 'right_dist', 'l_width',
-       'r_width', 'dist_apex_1', 'dist_apex_2', 'angle_to_apex1',
-       'angle_to_apex2', 'proj_from_ref'
+    'SPEED', 'THROTTLE', 'STEER', 'BRAKE', 'CURRENTLAPTIMEINMS',
+    'LAPDISTANCE', 'WORLDPOSITIONX', 'WORLDPOSITIONY',
+    'WORLDFORWARDDIRX', 'WORLDFORWARDDIRY', 'YAW', 'PITCH',
+    'ROLL', 'left_dist', 'right_dist', 'dist_apex_1', 'dist_apex_2', 'angle_to_apex1',
+    'angle_to_apex2', 'proj_from_ref'
 ]
 
 SET_DISTANCES = [360, 430, 530]
-

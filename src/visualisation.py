@@ -41,8 +41,8 @@ def plot_k_turns(data, turns, track_left, track_right, x_col="WORLDPOSITIONX", y
 
 
 def plot_laps(data, y_col="BRAKE", distance_range=(0, 300),
-              exclude_laps=None, only_valid=True,
-              figsize=(12, 8), point_size=1, ax=None):
+              exclude_laps=None, only_valid=False,
+              figsize=(12, 8), point_size=1, ax=None, c = None):
     """
     Plot lap data with LAPDISTANCE on the x-axis and a chosen column on the y-axis.
 
@@ -87,7 +87,7 @@ def plot_laps(data, y_col="BRAKE", distance_range=(0, 300),
 
     # Plot
     sc = ax.scatter(d["LAPDISTANCE"], d[y_col],
-                    s=point_size, c=d["lap_id"])
+                    s=point_size, c=c) #, c=d["lap_id"]
     ax.set_xlabel("LAPDISTANCE")
     ax.set_ylabel(y_col)
     ax.set_title(f"{y_col} vs LAPDISTANCE")

@@ -7,27 +7,63 @@ from .geometry_utils import interpolate_at_distance
 from .config import FEATURES
 
 
-def moment_generator(data, moment_name, feature_names, moment_LD, extrema_LD = None, epsilon=0.1):
-    ### from the point row data -> transform into lap row data
-    ### 1. for each element of the moment_LD (moment lap distance where the index is the lap_id) we want to contruct a row that looks like
-    ### Lap_id, moment_name_feature1, moment_name_feature2 .... for all the features in feature names
-    ### the data is formated is a pd df with each row conaining a point and the columns including the features, lapdistance, lap_id etc..
-    ### the row that you are adding to our new dataframe should be at at a lap_distance from the moment_LD dataframe (a dataframe where the index is the lap_id, the column is the lap distance)
+def moment_generator(data, moment_name, feature_names, moment_LD, extrema_LD=None, epsilon=0.1):
+    # from the point row data -> transform into lap row data
+    # Expects moment_LD to be a DataFrame with 'lap_id' and a distance column, or a Series with lap_id as index
+
+    # Convert to DataFrame format if it's a Series
+    if isinstance(moment_LD, pd.Series):
+        moment_LD_df = moment_LD.reset_index()
+        moment_LD_df.columns = ['lap_id', 'distance']
+    else:
+        # Assume it's already a DataFrame with lap_id and one distance column
+        moment_LD_df = moment_LD.copy()
+        # Get the distance column (should be the non-lap_id column)
+        distance_col = [
+            col for col in moment_LD_df.columns if col != 'lap_id'][0]
+        moment_LD_df = moment_LD_df.rename(columns={distance_col: 'distance'})
+
+    # Similarly for extrema_LD
+    if extrema_LD is not None:
+        if isinstance(extrema_LD, pd.Series):
+            extrema_LD_df = extrema_LD.reset_index()
+            extrema_LD_df.columns = ['lap_id', 'extrema_distance']
+        else:
+            extrema_LD_df = extrema_LD.copy()
+            extrema_distance_col = [
+                col for col in extrema_LD_df.columns if col != 'lap_id'][0]
+            extrema_LD_df = extrema_LD_df.rename(
+                columns={extrema_distance_col: 'extrema_distance'})
 
     results = []
 
-    for lap_id, target_LD in moment_LD.items():
+    for _, row_data in moment_LD_df.iterrows():
+        lap_id = row_data['lap_id']
+        target_LD = row_data['distance']
+
+        # Initialize entry with lap_id first
+        entry = {"lap_id": lap_id}
+
         # Extract this lap's data
         lap_data = data[data["lap_id"] == lap_id]
+
         if lap_data.empty or pd.isna(target_LD):
+            # Add NaN values for all features to preserve structure
+            for feat in feature_names:
+                entry[f"{moment_name}_{feat}"] = np.nan
+
+            # Add NaN for extrema if needed
+            if extrema_LD is not None:
+                entry[f"{moment_name}_ext_LAPDISTANCE"] = np.nan
+                entry[f"{moment_name}_ext_TIMETOINMS"] = np.nan
+
+            results.append(entry)
             continue
 
-        # Find row closest to target LAPDISTANCE less then epsilon
+        # Find row closest to target LAPDISTANCE less than epsilon
         distances = (lap_data["LAPDISTANCE"] - target_LD).abs()
         min_distance = distances.min()
 
-        entry = {"lap_id": lap_id}
-        
         if min_distance <= epsilon:
             idx = distances.idxmin()
             row = lap_data.loc[idx]
@@ -36,8 +72,9 @@ def moment_generator(data, moment_name, feature_names, moment_LD, extrema_LD = N
                 entry[f"{moment_name}_{feat}"] = row.get(feat, np.nan)
 
         else:
-            ### THESE ARE THE ROWS THAT NEED INTERPOLATING AT THAT DISTANCE
-            interpolated = interpolate_at_distance(lap_data, target_LD, features=feature_names)
+            # THESE ARE THE ROWS THAT NEED INTERPOLATING AT THAT DISTANCE
+            interpolated = interpolate_at_distance(
+                lap_data, target_LD, features=feature_names)
             if not interpolated.empty:
                 for feat in feature_names:
                     entry[f"{moment_name}_{feat}"] = interpolated[f"interpolated_{feat}"].values[0]
@@ -46,17 +83,28 @@ def moment_generator(data, moment_name, feature_names, moment_LD, extrema_LD = N
                     entry[f"{moment_name}_{feat}"] = np.nan
 
         # For extrema
-        if extrema_LD is not None and lap_id in extrema_LD.index:
-            extrema_target = extrema_LD.loc[lap_id]
-            if not pd.isna(extrema_target):
-                idx_extrema = (lap_data["LAPDISTANCE"] - extrema_target).abs().idxmin()
-                extrema_row = lap_data.loc[idx_extrema]
-                entry[f"{moment_name}_ext_LAPDISTANCE"] = extrema_row.get("LAPDISTANCE", np.nan)
-                entry[f"{moment_name}_ext_TIMETOINMS"] = extrema_row.get("CURRENTLAPTIMEINMS") - entry.get(f"{moment_name}_CURRENTLAPTIMEINMS")
+        if extrema_LD is not None:
+            extrema_row_data = extrema_LD_df[extrema_LD_df['lap_id'] == lap_id]
+            if not extrema_row_data.empty:
+                extrema_target = extrema_row_data['extrema_distance'].values[0]
+                if not pd.isna(extrema_target):
+                    idx_extrema = (
+                        lap_data["LAPDISTANCE"] - extrema_target).abs().idxmin()
+                    extrema_row = lap_data.loc[idx_extrema]
+                    entry[f"{moment_name}_ext_LAPDISTANCE"] = extrema_row.get(
+                        "LAPDISTANCE", np.nan)
+                    entry[f"{moment_name}_ext_TIMETOINMS"] = extrema_row.get(
+                        "CURRENTLAPTIMEINMS", np.nan) - entry.get(f"{moment_name}_CURRENTLAPTIMEINMS", np.nan)
+                else:
+                    entry[f"{moment_name}_ext_LAPDISTANCE"] = np.nan
+                    entry[f"{moment_name}_ext_TIMETOINMS"] = np.nan
+            else:
+                entry[f"{moment_name}_ext_LAPDISTANCE"] = np.nan
+                entry[f"{moment_name}_ext_TIMETOINMS"] = np.nan
 
         results.append(entry)
 
-    # Return as DataFrame
+    # Return as DataFrame with lap_id as index
     return pd.DataFrame(results).set_index("lap_id")
 
 
@@ -97,7 +145,8 @@ def get_throttle_points(df, distance_range=(10, 710), lift_threshold=0.02):
             continue
 
         # Smooth throttle to reduce noise
-        throttle = group["THROTTLE"] #.rolling(3, center=True, min_periods=1).mean()
+        # .rolling(3, center=True, min_periods=1).mean()
+        throttle = group["THROTTLE"]
         d_throttle = throttle.diff()
 
         # Find first lift
@@ -115,15 +164,17 @@ def get_throttle_points(df, distance_range=(10, 710), lift_threshold=0.02):
         lift_idx = lift_points.index[0]
         first_lift_LD = group.loc[lift_idx, "LAPDISTANCE"]
 
-        # Minimum throttle after lift 
+        # Minimum throttle after lift
         after_lift = group.loc[lift_idx:]
         min_idx = after_lift["THROTTLE"].idxmin()
         min_throttle_LD = group.loc[min_idx, "LAPDISTANCE"]
 
         # First "back on" point
         after_min = group.loc[min_idx:]
-        d_throttle_after_min = after_min["THROTTLE"].diff() #.rolling(3, center=True, min_periods=1).mean()
-        back_on_points = d_throttle_after_min[d_throttle_after_min > lift_threshold]
+        # .rolling(3, center=True, min_periods=1).mean()
+        d_throttle_after_min = after_min["THROTTLE"].diff()
+        back_on_points = d_throttle_after_min[d_throttle_after_min >
+                                              lift_threshold]
 
         if not back_on_points.empty:
             back_on_idx = back_on_points.index[0]
@@ -150,20 +201,21 @@ def get_throttle_points(df, distance_range=(10, 710), lift_threshold=0.02):
     return pd.DataFrame(results)
 
 
-def get_braking_points(df, distance_range = (10,800)):
-    results =[]
+def get_braking_points(df, distance_range=(10, 800)):
+    results = []
 
     for lap_id, group in df.groupby("lap_id"):
         group = group.sort_values("LAPDISTANCE").reset_index(drop=True)
-        group = group[(group["LAPDISTANCE"] >= distance_range[0]) & (group["LAPDISTANCE"] <= distance_range[1])]
+        group = group[(group["LAPDISTANCE"] >= distance_range[0])
+                      & (group["LAPDISTANCE"] <= distance_range[1])]
 
         if group["BRAKE"].isna().all():
             results.append({
-            'lap_id': lap_id,
-            'max_brake_LD': None,
-            'BP_LD': None,
-            'brake_decrease_LD': None,
-            'brake_end_LD': None
+                'lap_id': lap_id,
+                'max_brake_LD': None,
+                'BP_LD': None,
+                'brake_decrease_LD': None,
+                'brake_end_LD': None
             })
             continue
 
@@ -171,16 +223,16 @@ def get_braking_points(df, distance_range = (10,800)):
 
         if pd.isna(max_idx) or max_idx not in group.index:
             results.append({
-            'lap_id': lap_id,
-            'max_brake_LD': None,
-            'BP_LD': None,
-            'brake_decrease_LD': None,
-            'brake_end_LD': None
+                'lap_id': lap_id,
+                'max_brake_LD': None,
+                'BP_LD': None,
+                'brake_decrease_LD': None,
+                'brake_end_LD': None
             })
             continue
-        
+
         max_brake_LD = group.loc[max_idx, "LAPDISTANCE"]
-            
+
         before_max = group.loc[:group.index.get_loc(max_idx)]
         zero_brake = before_max[before_max["BRAKE"] == 0]
 
@@ -197,7 +249,7 @@ def get_braking_points(df, distance_range = (10,800)):
         brake_end_LD = None
 
         if not after_max.empty:
-            brake_values  =after_max["BRAKE"].values
+            brake_values = after_max["BRAKE"].values
             diffs = pd.Series(brake_values).diff().fillna(0)
             dec_indices = after_max.index[diffs < 0]
 
@@ -225,45 +277,44 @@ def get_braking_points(df, distance_range = (10,800)):
     return pd.DataFrame(results)
 
 
-def get_apex_points(data, apex_columns = ["dist_apex_1", "dist_apex_2"]):
+def get_apex_points(data, apex_columns=["dist_apex_1", "dist_apex_2"]):
     """
     Find the LAPDISTANCE where each apex distance column is minimized for each lap.
     """
     results = []
-    
+
     for lap_id, group in data.groupby("lap_id"):
         group = group.set_index("LAPDISTANCE")
-        
+
         entry = {"lap_id": lap_id}
-        
+
         for apex_col in apex_columns:
             min_lapdistance = group[apex_col].idxmin()
             # Extract apex number or use full column name
             apex_name = apex_col.replace("dist_", "").replace("apex_", "apex")
             entry[f"{apex_name}_LD"] = min_lapdistance
 
-        
         results.append(entry)
-    
-    return pd.DataFrame(results).set_index("lap_id")
+
+    return pd.DataFrame(results)
 
 
-def get_steering_points(df, distance_range = (10,800)):
-    results=[]
+def get_steering_points(df, distance_range=(10, 800)):
+    results = []
 
     for lap_id, group in df.groupby("lap_id"):
         group = group.sort_values("LAPDISTANCE").reset_index(drop=True)
-        group = group[(group["LAPDISTANCE"] >= distance_range[0]) & (group["LAPDISTANCE"] <= distance_range[1])]
-
+        group = group[(group["LAPDISTANCE"] >= distance_range[0])
+                      & (group["LAPDISTANCE"] <= distance_range[1])]
 
         if group["STEER"].isna().all():
             results.append({
-            'lap_id': lap_id,
-            'first_steer_LD': None,
-            'max_pos_angle_steer_LD': None,
-            'middle_TP_LD': None,
-            'max_neg_LD': None,
-            'end_steer_LD': None
+                'lap_id': lap_id,
+                'first_steer_LD': None,
+                'max_pos_angle_steer_LD': None,
+                'middle_TP_LD': None,
+                'max_neg_LD': None,
+                'end_steer_LD': None
             })
             continue
 
@@ -274,20 +325,22 @@ def get_steering_points(df, distance_range = (10,800)):
         max_neg_angle_LD = group.loc[max_neg_idx, "LAPDISTANCE"]
 
         before_max_pos = group.loc[:group.index.get_loc(max_pos_idx)]
-        zero_steer = before_max_pos[np.abs(before_max_pos["STEER"]) <= 0.01 ]
+        zero_steer = before_max_pos[np.abs(before_max_pos["STEER"]) <= 0.01]
 
         if not zero_steer.empty:
             first_steer_LD = zero_steer["LAPDISTANCE"].iloc[-1]
         else:
             first_steer_LD = None
 
-        after_max_pos = group.iloc[group.index > group.index.get_loc(max_pos_idx)]
-        after_max_neg = group.iloc[group.index > group.index.get_loc(max_neg_idx)]
+        after_max_pos = group.iloc[group.index >
+                                   group.index.get_loc(max_pos_idx)]
+        after_max_neg = group.iloc[group.index >
+                                   group.index.get_loc(max_neg_idx)]
 
         middle_steering = None
         steer_end_LD = None
 
-        if not after_max_pos.empty:    
+        if not after_max_pos.empty:
             steer_series = after_max_pos["STEER"]
             sign_change = steer_series.shift(1) * steer_series < 0
 
@@ -303,7 +356,8 @@ def get_steering_points(df, distance_range = (10,800)):
                     LD_A = group.loc[idx_A, "LAPDISTANCE"]
                     LD_B = group.loc[idx_B, "LAPDISTANCE"]
 
-                    middle_steering = LD_A + (LD_B - LD_A) * (steer_A) / (steer_A - steer_B)
+                    middle_steering = LD_A + \
+                        (LD_B - LD_A) * (steer_A) / (steer_A - steer_B)
 
         if not after_max_neg.empty:
             steer_series = after_max_neg["STEER"]
@@ -321,18 +375,16 @@ def get_steering_points(df, distance_range = (10,800)):
                     LD_A = group.loc[idx_A, "LAPDISTANCE"]
                     LD_B = group.loc[idx_B, "LAPDISTANCE"]
 
-                    steer_end_LD = LD_A + (LD_B - LD_A) * (steer_A) / (steer_A - steer_B)
+                    steer_end_LD = LD_A + (LD_B - LD_A) * \
+                        (steer_A) / (steer_A - steer_B)
 
         results.append({
-        'lap_id': lap_id,
-        'first_steer_LD': first_steer_LD,
-        'max_pos_angle_steer_LD': max_pos_angle_LD,
-        'middle_TP_LD': middle_steering,
-        'max_neg_LD': max_neg_angle_LD,
-        'end_steer_LD': steer_end_LD
+            'lap_id': lap_id,
+            'first_steer_LD': first_steer_LD,
+            'max_pos_angle_steer_LD': max_pos_angle_LD,
+            'middle_TP_LD': middle_steering,
+            'max_neg_LD': max_neg_angle_LD,
+            'end_steer_LD': steer_end_LD
         })
 
     return pd.DataFrame(results)
-
-
-

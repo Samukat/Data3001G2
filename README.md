@@ -45,7 +45,7 @@ The following documentation expands on our engineered features by defining two k
 
 #### <u>Moments</u>
 
-**Moments** represent key behavioural or mechanical events that occurs during a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track.
+**Moments** represent key behavioural or mechanical events that occurs during a lap. For instance, when a driver first applies the brake, releases the throttle, or reaches the midpoint of a turn. These reference points are used to anchor subsequent calculations to measure timing, distance, and performance changes through each section of the track. An exmaple of some of the moments can be seen in *Figure. 5*.
 
 | **Type of Moment** | **Moment** | **Code Pattern / Prefix** | **Time-to-Extrema** | **Description** |
 |--------------------|------------------------|-----------------------|--------------------|----------------|
@@ -170,7 +170,7 @@ To verify the data and provide context for later analysis, we reconstructed the 
 
 ### 3.4. Removing unsuitable laps
 
-- Removing rows with less than N (to be determined-Sam???) data points so features could be constructed cleanly
+- Removing rows with less than N 900 data points so features could be constructed cleanly (All laps bellow this number had large gaps)
 - Removing laps where lap max distance between points become too great -> inaccuracy
 
 ### 3.5. Feature engineering  
@@ -184,9 +184,9 @@ This feature serves two purposes:
 1. It provides a spatial context for the car’s position along the track.  
 2. It is used in off-track detection by comparing a car’s perpendicular distance from the track edges against the track width plus a buffer representing half the car’s width.  
 
-| ![Track width](images/image-1.png) |
+| ![Track width](images/track_width_analysis.png) |
 | :-: |
-| *Figure 3. Track width near corner (TBA - Index to be replaced with distance and maybe add where the apexes are as well? - (Sam))* |
+| *Figure 3. Track width near corner* |
 
 This method was also used to calculate the *ref-line feature*; how far the car was to the sample reference line given. This was done according to the paper by Jain and Morari in 2020<sup>(1)</sup> in which they used Bayesian optimisation to compute the optimal racing line compared to the given trajectory of the car. This can be used to determine whether the provided reference line is truly the optimum racing line.
 
@@ -210,21 +210,25 @@ It is also to note that by choosing a later point, rather than just after Turn 2
 
 We constructed new features to capture driver behaviour and vehicle dynamics more explicitly. These include braking and acceleration zones, steering angles, and measures of cornering precision. Each feature was designed as a separate transformation so that the pipeline can flexibly add or remove features depending on modelling needs.
 
+| ![Example Lap of ](images/telemetry_features.png) |
+| :-: |
+| *Figure 5. Moment examples of throttle, break and steering*|
+
 #### 3.6.1 Linear interpolation
 
 To construct moments corresponding to lap distances that were not explicitly defined (e.g., the moments at 360 m, 430 m, 530 m, the target of 900 m, and the midpoint of the turn), linear interpolation was applied. The two closest points to the target distance were identified, and their values were used to estimate the intermediate moment through a weighted linear combination based on their relative distances. Likewise, linear interpolation was used to determine the steering angles between turn 1 and 2 as well as after turn 2.
 
 #### 3.6.2 Braking points
 
-We constructed 4 new features using the BRAKE measurements. We attained the lap distance for when the driver engaged maximum braking (`STM`) over the lap distance range between 10 and 800. To find the initial braking point (`BPS`), we used the maximum braking point to backtrack and find the lap distance when the `BRAKE` variable is 0. If there is no data for when `BRAKE` is 0, then the last point before maximum braking point is used and otherwise given a NaN value. We attained the lap distance where the driver disengages from maximum braking by finding the last measurement before the drop in `BRAKE` from maximum. The lap distance for when the driver completely stops braking (`BPE`) was found by the first measurement where `BRAKE` is 0 after the drop from maximum braking.
+We constructed 4 new features using the BRAKE measurements. We attained the lap distance for when the driver engaged maximum braking (`STM`) over the lap distance range between 10 and 800. To find the initial braking point (`BPS`), we used the maximum braking point to backtrack and find the lap distance when the `BRAKE` variable is 0. If there is no data for when `BRAKE` is 0, then the last point before maximum braking point is used and otherwise given a NaN value. We attained the lap distance where the driver disengages from maximum braking by finding the last measurement before the drop in `BRAKE` from maximum. The lap distance for when the driver completely stops braking (`BPE`) was found by the first measurement where `BRAKE` is 0 after the drop from maximum braking. This can be seen in the `BRAKE` section of *Figure 5*.
 
 #### 3.6.3 Steering points
 
-We constructed 5 new features using the `STEER` measurements. We attained the lap distance for maximum positive angle and the maximum negative angle for each lap by finding the maximum and minimum value of `STEER` respectively. To find the initial steering for turn 1 (`STS`), we used the maximum positive angle point to backtrack and find the lap distance of the first measurement when the `STEER` variable is less than 0.01. We did not use the points where `STEER` is zero to take into account slight changes drivers made on the straight before turn 1. The lap distance where the driver returned back to the angle being 0 (`STM`) was found by detecting when the sign changes in the steer angle for measurements between the maximum positive angle and the maximum negative angle. Then the two points around the change were used to linearly interpolate the lap distance around which the steering would have been 0. The lap distance for when the steering angle returns to 0 after turn 2 (`STE`) was calculated exactly the same way as `STM`.
+We constructed 5 new features using the `STEER` measurements. We attained the lap distance for maximum positive angle and the maximum negative angle for each lap by finding the maximum and minimum value of `STEER` respectively. To find the initial steering for turn 1 (`STS`), we used the maximum positive angle point to backtrack and find the lap distance of the first measurement when the `STEER` variable is less than 0.01. We did not use the points where `STEER` is zero to take into account slight changes drivers made on the straight before turn 1. The lap distance where the driver returned back to the angle being 0 (`STM`) was found by detecting when the sign changes in the steer angle for measurements between the maximum positive angle and the maximum negative angle. Then the two points around the change were used to linearly interpolate the lap distance around which the steering would have been 0. The lap distance for when the steering angle returns to 0 after turn 2 (`STE`) was calculated exactly the same way as `STM`. This can be seen in the `STEERING` section of Figure 5.
 
 #### 3.6.4 Throttle moments
 
-For the throttle moments and extract key throttle-related moments from each lap, we developed the `get_throttle_points` function. For each lap, we identify when the driver first lifts off the throttle (`THE`), the minimum throttle reached afterwards, when they begin reapplying throttle (`THS`), and when throttle returns to its maximum. These points capture important aspects of driver behaviour, such as corner entry, mid-corner control, and corner exit. A small lift threshold was used to filter out minor fluctuations while preserving meaningful changes, and any laps with missing throttle data are still included to retain other useful features.
+For the throttle moments and extract key throttle-related moments from each lap, we developed the `get_throttle_points` function. For each lap, we identify when the driver first lifts off the throttle (`THE`), the minimum throttle reached afterwards, when they begin reapplying throttle (`THS`), and when throttle returns to its maximum. These points capture important aspects of driver behaviour, such as corner entry, mid-corner control, and corner exit. A small lift threshold was used to filter out minor fluctuations while preserving meaningful changes, and any laps with missing throttle data are still included to retain other useful features. This can be seen in the `THROTTLE` section of Figure 5.
 
 This was done by first sorting each lap by distance and restricting the analysis to a specified distance range (Near the turn). Differences in consecutive throttle values were then computed to detect lift-offs and reapplications, and the corresponding lap distances for minimum and maximum throttle points were recorded for each lap. (We used a threshold value of 0.02 to avoid noise).
 
@@ -321,10 +325,7 @@ For questions or suggestions, contact:
 
 ## 8. References
 
- 1. Jain, A. and Morari, M. (2020). Computing the racing line using Bayesian optimization, Cornell University Available at: https://arxiv.org/abs/2002.04794
- 2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: https://digitalcommons.cwu.edu/source/2022/COTS/99/.
-
-
+ 1. Jain, A. and Morari, M. (2020). Computing the racing line using Bayesian optimization, Cornell University Available at: <https://arxiv.org/abs/2002.04794>
+ 2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
-
