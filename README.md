@@ -32,7 +32,7 @@ Data sources include:
 
 #### 2.2.1. Final Data Product Description
 
-The final data product is a lap-level dataset, with each row representing a single lap attempted by a driver (~500–1000 rows total). Features summarise key aspects of lap execution (e.g. braking, throttle, steering, speed, and segment-based performance), aligned to track geometry and specific race segments. The dataset is designed to capture both overall lap characteristics and driver–track interactions, with the target variable being lap time.
+The final data product is a lap-level dataset, with each row representing a single lap attempted by a driver (~500–1000 rows total) with the `lap_id` feature being a concatenation of `SESSION_GUID` and the lap number. Features summarise key aspects of lap execution (e.g. braking, throttle, steering, speed, and segment-based performance), aligned to track geometry and specific race segments. The dataset is designed to capture both overall lap characteristics and driver–track interactions, with the target variable being lap time.
 
 - **Observations (rows):** one per lap, across all drivers (~500–1000 total)
 - **Features (columns):** engineered summaries of braking, throttle, steering, speed, and sector performance
@@ -172,6 +172,7 @@ To verify the data and provide context for later analysis, we reconstructed the 
 
 - Removing rows with less than N 900 data points so features could be constructed cleanly (All laps bellow this number had large gaps)
 - Removing laps where lap max distance between points become too great -> inaccuracy
+- Removing laps where the target lap time could not be interpolated due to missing measurement points before and/or after the 900m lapdistance
 
 ### 3.5. Feature engineering  
 
@@ -202,7 +203,11 @@ Since the provided coordinates do not account for the car’s physical width, we
 
 #### 3.5.3. Target distance
 
-We chose the target lap distance 900 to be the point where we determine drivers’ time. Since we used linear interpolation of lap distance covered to determine when the driver reaches the target lap distance, the most accurate section between turn 2 and 3 for us to consider for the target lap distance would be the latter half. The reasoning is that the rate of change in acceleration and speed during the exit from turn 2 would be high which in turn would result in the rate of change in lap distance to also be high causing uneven distances between measurement points. This would lead to a less accurate linear interpolation result relative to the latter half since the rate of change in acceleration and speed plateaus and thus results in more even distances between measurement points improving the accuracy of the linear interpolation. We also plotted a brake vs lap distance plot (add a plot here Sam ???) for our subset of drivers and found that majority of drivers begin braking for turn 3 around the lap distance 950. To ensure that our interpolation function does not get influenced by the braking and distances between measurement points, we choose the target lap distance to be 900.
+We chose the target lap distance 900 to be the point where we determine drivers’ time. Since we used linear interpolation of lap distance covered to determine when the driver reaches the target lap distance, the most accurate section between turn 2 and 3 for us to consider for the target lap distance would be the latter half. The reasoning is that the rate of change in acceleration and speed during the exit from turn 2 would be high which in turn would result in the rate of change in lap distance to also be high causing uneven distances between measurement points. This would lead to a less accurate linear interpolation result relative to the latter half since the rate of change in acceleration and speed plateaus and thus results in more even distances between measurement points improving the accuracy of the linear interpolation. We also plotted a brake vs lap distance plot for our subset of drivers and found that majority of drivers begin braking for turn 3 around the lap distance 950. To ensure that our interpolation function does not get influenced by the braking and distances between measurement points, we choose the target lap distance to be 900.
+
+| ![alt text](images/average_brake_plot.png) |
+| :-: |
+| *Figure 5. Visualization of aggregate braking input patterns along the sampled track distance*|
 
 It is also to note that by choosing a later point, rather than just after Turn 2, we optimise two objectives simultaneously: maximising exit speed from the corner and minimising the elapsed time to complete the run into Turn 3. This works because exit speed and segment time are inherently linked being inversely proportional, so optimising the target point jointly improves both objectives simultaneously.
 
@@ -212,7 +217,7 @@ We constructed new features to capture driver behaviour and vehicle dynamics mor
 
 | ![Example Lap of ](images/telemetry_features.png) |
 | :-: |
-| *Figure 5. Moment examples of throttle, break and steering*|
+| *Figure 6. Moment examples of throttle, break and steering*|
 
 #### 3.6.1 Linear interpolation
 
@@ -220,21 +225,21 @@ To construct moments corresponding to lap distances that were not explicitly def
 
 #### 3.6.2 Braking points
 
-We constructed 4 new features using the BRAKE measurements. We attained the lap distance for when the driver engaged maximum braking (`STM`) over the lap distance range between 10 and 800. To find the initial braking point (`BPS`), we used the maximum braking point to backtrack and find the lap distance when the `BRAKE` variable is 0. If there is no data for when `BRAKE` is 0, then the last point before maximum braking point is used and otherwise given a NaN value. We attained the lap distance where the driver disengages from maximum braking by finding the last measurement before the drop in `BRAKE` from maximum. The lap distance for when the driver completely stops braking (`BPE`) was found by the first measurement where `BRAKE` is 0 after the drop from maximum braking. This can be seen in the `BRAKE` section of *Figure 5*.
+We constructed 4 new features using the BRAKE measurements. We attained the lap distance for when the driver engaged maximum braking (`STM`) over the lap distance range between 10 and 800. To find the initial braking point (`BPS`), we used the maximum braking point to backtrack and find the lap distance when the `BRAKE` variable is 0. If there is no data for when `BRAKE` is 0, then the last point before maximum braking point is used and otherwise given a NaN value. We attained the lap distance where the driver disengages from maximum braking by finding the last measurement before the drop in `BRAKE` from maximum. The lap distance for when the driver completely stops braking (`BPE`) was found by the first measurement where `BRAKE` is 0 after the drop from maximum braking. This can be seen in the `BRAKE` section of *Figure 6*.
 
 #### 3.6.3 Steering points
 
-We constructed 5 new features using the `STEER` measurements. We attained the lap distance for maximum positive angle and the maximum negative angle for each lap by finding the maximum and minimum value of `STEER` respectively. To find the initial steering for turn 1 (`STS`), we used the maximum positive angle point to backtrack and find the lap distance of the first measurement when the `STEER` variable is less than 0.01. We did not use the points where `STEER` is zero to take into account slight changes drivers made on the straight before turn 1. The lap distance where the driver returned back to the angle being 0 (`STM`) was found by detecting when the sign changes in the steer angle for measurements between the maximum positive angle and the maximum negative angle. Then the two points around the change were used to linearly interpolate the lap distance around which the steering would have been 0. The lap distance for when the steering angle returns to 0 after turn 2 (`STE`) was calculated exactly the same way as `STM`. This can be seen in the `STEERING` section of Figure 5.
+We constructed 5 new features using the `STEER` measurements. We attained the lap distance for maximum positive angle and the maximum negative angle for each lap by finding the maximum and minimum value of `STEER` respectively. To find the initial steering for turn 1 (`STS`), we used the maximum positive angle point to backtrack and find the lap distance of the first measurement when the `STEER` variable is less than 0.01. We did not use the points where `STEER` is zero to take into account slight changes drivers made on the straight before turn 1. The lap distance where the driver returned back to the angle being 0 (`STM`) was found by detecting when the sign changes in the steer angle for measurements between the maximum positive angle and the maximum negative angle. Then the two points around the change were used to linearly interpolate the lap distance around which the steering would have been 0. The lap distance for when the steering angle returns to 0 after turn 2 (`STE`) was calculated exactly the same way as `STM`. This can be seen in the `STEERING` section of *Figure 6*.
 
 #### 3.6.4 Throttle moments
 
-For the throttle moments and extract key throttle-related moments from each lap, we developed the `get_throttle_points` function. For each lap, we identify when the driver first lifts off the throttle (`THE`), the minimum throttle reached afterwards, when they begin reapplying throttle (`THS`), and when throttle returns to its maximum. These points capture important aspects of driver behaviour, such as corner entry, mid-corner control, and corner exit. A small lift threshold was used to filter out minor fluctuations while preserving meaningful changes, and any laps with missing throttle data are still included to retain other useful features. This can be seen in the `THROTTLE` section of Figure 5.
+For the throttle moments and extract key throttle-related moments from each lap, we developed the `get_throttle_points` function. For each lap, we identify when the driver first lifts off the throttle (`THE`), the minimum throttle reached afterwards, when they begin reapplying throttle (`THS`), and when throttle returns to its maximum. These points capture important aspects of driver behaviour, such as corner entry, mid-corner control, and corner exit. A small lift threshold was used to filter out minor fluctuations while preserving meaningful changes, and any laps with missing throttle data are still included to retain other useful features. This can be seen in the `THROTTLE` section of *Figure 6*.
 
 This was done by first sorting each lap by distance and restricting the analysis to a specified distance range (Near the turn). Differences in consecutive throttle values were then computed to detect lift-offs and reapplications, and the corresponding lap distances for minimum and maximum throttle points were recorded for each lap. (We used a threshold value of 0.02 to avoid noise).
 
 #### 3.6.5 Apex moments
 
-To determine the apex moments, the point closest to each apex was identified for every lap and designated as the moment. The lap distance at this point was then recorded as a unique identifier for that lap, serving as the reference for generating the complete moment data.
+Each lap’s apex moments were determined by identifying the points closest to each of the two apexes. The lap distances at these points were then recorded as unique identifiers for their corresponding lap, serving as the reference for generating the complete moment dataset.
 
 ### 3.7. Analysis and modelling (planned)  
 
@@ -255,19 +260,19 @@ We aimed to create a Velocity vs Tire Direction feature representing the differe
 
 Additionally, some cells in the final dataset remain NaN, as certain laps lacked specific data such as braking or throttle inputs. These laps were retained since they still contain valuable information that can be leveraged in modelling. Any further handling of missing values can be efficiently performed during the modelling stage.
 
-Finally, invalid laps (where the car went off track) were also retained, marked with a dedicated flag, to preserve potentially useful behavioural and contextual data.
+Finally, invalid laps (where the car went off track) were also retained and marked with a dedicated flag to preserve potentially useful behavioural and contextual data.
 
 ### 4.3. Dataset Construction  
 
 - Interpreted dataset structure  
 - Visualized variables and circuit geometry  
-- Cleaned data (removed off-track laps, NaNs, and other filtering)
+- Cleaned data (removed off-track laps, NaNs, inadequate measurements and other filtering)
 - Constructed some basic filters (e.g. angle and distance to apex)  
 
 ### 4.4. Next Steps  
 
-- Develop and test models for driver performance analysis  
-- Evaluate results and compare across drivers  
+Future work may focus on developing models that examine the impact of individual telemetry features on lap outcomes with the objective of isolating key performance indicators. These models could then be applied across drivers to depict variations in factors such as braking strategy, throttle application and racing lines. Following this analysis, a comprehensive evaluation of driving efficiency can be conducted to pinpoint the exact areas in which performance gains are realised.
+
 
 ---
 
@@ -282,7 +287,12 @@ This product is intended for:
 Future work may include:  
 
 - Integrating external racing telemetry datasets  
-- Building interactive simulations  
+- Building interactive simulations
+- Creating new features
+- Building models various different models to determine optimum racing conditions such as:
+    - Regression models to predict the finish time e.g Linear Regression or Random Forest based on features of steering, braking, throttle etc.
+    - Classification models to classify laps based on performance e.g fast, fair, slow
+    - Time Series Analysis for drivers who completed multiple laps to determine how performance changes over increased number of laps
 
 To get the final dataset run the python file "run_pipeline" ensuring the required data in within the data folder, see `config.py`.
 
@@ -307,7 +317,7 @@ If you’d like to contribute:
 - Explore additional factors influencing lap time  
 - Generate new features from existing data  
 - Build simulations to test strategies  
-- Integrate external datasets  
+- Integrate external datasets
 
 ---
 
@@ -329,3 +339,12 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
+
+
+
+
+
+
+
+
