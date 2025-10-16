@@ -207,8 +207,13 @@ def id_outoftrack(df, buffer=0.53, start=350, end=600, inplace=True):
     return df
 
 
+# def add_lap_id(df):
+#     df['lap_id'] = df.groupby(['SESSIONUID', 'CURRENTLAPNUM']).ngroup()
+#     return df
+
 def add_lap_id(df):
-    df['lap_id'] = df.groupby(['SESSIONUID', 'CURRENTLAPNUM']).ngroup()
+    df['lap_id'] = df['SESSIONUID'].astype(
+        str) + "_" + df['CURRENTLAPNUM'].astype(str)
     return df
 
 

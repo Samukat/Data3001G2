@@ -289,6 +289,8 @@ def build_dataset(df: pd.DataFrame = None, start_stage=0):
         lambda left, right: pd.merge(left, right, on="lap_id", how="outer"),
         all_moments
     )
+
+    output = output[output["Target_CURRENTLAPTIMEINMS"] != 0]
     # Save final output
     print("\nSaving final dataset...")
     OUTPUT_FOLDER.mkdir(parents=True, exist_ok=True)
