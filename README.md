@@ -245,34 +245,14 @@ Each lap’s apex moments were determined by identifying the points closest to e
 
 The next step is to evaluate driver performance through Turns 1–3, comparing how different inputs (braking, throttle, steering) impact lap time / speed / **(TBA - THEORY)**.
 
+Future work may focus on developing models that examine the impact of individual telemetry features on lap outcomes with the objective of isolating key performance indicators. These models could then be applied across drivers to depict variations in factors such as braking strategy, throttle application and racing lines. Following this analysis, a comprehensive evaluation of driving efficiency can be conducted to pinpoint the exact areas in which performance gains are realised.
+
 ---
 
 ## 4. Project Status  
 
-### 4.1. Planning & Research  
-
 - Conducted literature review on driver behaviour, braking/throttle strategies, and racing simulations  
 - Identified limitations in existing studies such as the paper by Struthers called Formula One Telemetry Analysis<sup>(2)</sup> where research focused more on use of microprocessors in the Formula 1 simulator for data analysis and data structure construction for real time data graphs rather than analysis and modelling for improved lap performance.
-
-### 4.2 Other notes
-
-We aimed to create a Velocity vs Tire Direction feature representing the difference between the vehicle’s velocity vector and tire direction. However, this was not feasible due to missing or null velocity vector data, preventing reliable construction of the feature.
-
-Additionally, some cells in the final dataset remain NaN, as certain laps lacked specific data such as braking or throttle inputs. These laps were retained since they still contain valuable information that can be leveraged in modelling. Any further handling of missing values can be efficiently performed during the modelling stage.
-
-Finally, invalid laps (where the car went off track) were also retained and marked with a dedicated flag to preserve potentially useful behavioural and contextual data.
-
-### 4.3. Dataset Construction  
-
-- Interpreted dataset structure  
-- Visualized variables and circuit geometry  
-- Cleaned data (removed off-track laps, NaNs, inadequate measurements and other filtering)
-- Constructed some basic filters (e.g. angle and distance to apex)  
-
-### 4.4. Next Steps  
-
-Future work may focus on developing models that examine the impact of individual telemetry features on lap outcomes with the objective of isolating key performance indicators. These models could then be applied across drivers to depict variations in factors such as braking strategy, throttle application and racing lines. Following this analysis, a comprehensive evaluation of driving efficiency can be conducted to pinpoint the exact areas in which performance gains are realised.
-
 
 ---
 
@@ -339,6 +319,7 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
 
 
 
