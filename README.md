@@ -204,7 +204,7 @@ Since the provided coordinates do not account for the car’s physical width, we
 
 We chose the target lap distance 900 to be the point where we determine drivers’ time. Since we used linear interpolation of lap distance covered to determine when the driver reaches the target lap distance, the most accurate section between turn 2 and 3 for us to consider for the target lap distance would be the latter half. The reasoning is that the rate of change in acceleration and speed during the exit from turn 2 would be high which in turn would result in the rate of change in lap distance to also be high causing uneven distances between measurement points. This would lead to a less accurate linear interpolation result relative to the latter half since the rate of change in acceleration and speed plateaus and thus results in more even distances between measurement points improving the accuracy of the linear interpolation. We also plotted a brake vs lap distance plot for our subset of drivers and found that majority of drivers begin braking for turn 3 around the lap distance 950. To ensure that our interpolation function does not get influenced by the braking and distances between measurement points, we choose the target lap distance to be 900.
 
-| ![alt text](images/Brake_vs_lapdistance_graph.png) |
+| ![alt text](images/avg_brake_plot.png) |
 | :-: |
 | *Figure 5. Visualization of aggregate braking input patterns along the sampled track distance*|
 
@@ -258,6 +258,8 @@ The next step is to evaluate driver performance through Turns 1–3, comparing h
 We aimed to create a Velocity vs Tire Direction feature representing the difference between the vehicle’s velocity vector and tire direction. However, this was not feasible due to missing or null velocity vector data, preventing reliable construction of the feature.
 
 Additionally, some cells in the final dataset remain NaN, as certain laps lacked specific data such as braking or throttle inputs. These laps were retained since they still contain valuable information that can be leveraged in modelling. Any further handling of missing values can be efficiently performed during the modelling stage.
+
+Finally, invalid laps (where the car went off track) were also retained and marked with a dedicated flag to preserve potentially useful behavioural and contextual data.
 
 ### 4.3. Dataset Construction  
 
@@ -331,6 +333,7 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
 
 
 
