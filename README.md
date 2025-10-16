@@ -172,6 +172,7 @@ To verify the data and provide context for later analysis, we reconstructed the 
 
 - Removing rows with less than N 900 data points so features could be constructed cleanly (All laps bellow this number had large gaps)
 - Removing laps where lap max distance between points become too great -> inaccuracy
+- Removing laps where the target lap time could not be interpolated due to missing measurement points before and/or after the 900m lapdistance
 
 ### 3.5. Feature engineering  
 
@@ -265,7 +266,7 @@ Finally, invalid laps (where the car went off track) were also retained and mark
 
 - Interpreted dataset structure  
 - Visualized variables and circuit geometry  
-- Cleaned data (removed off-track laps, NaNs, and other filtering)
+- Cleaned data (removed off-track laps, NaNs, inadequate measurements and other filtering)
 - Constructed some basic filters (e.g. angle and distance to apex)  
 
 ### 4.4. Next Steps  
@@ -333,6 +334,7 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
 
 
 
