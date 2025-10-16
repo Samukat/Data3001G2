@@ -287,7 +287,12 @@ This product is intended for:
 Future work may include:  
 
 - Integrating external racing telemetry datasets  
-- Building interactive simulations  
+- Building interactive simulations
+- Creating new features
+- Building models various different models to determine optimum racing conditions such as:
+    - Regression models to predict the finish time e.g Linear Regression or Random Forest based on features of steering, braking, throttle etc.
+    - Classification models to classify laps based on performance e.g fast, fair, slow
+    - Time Series Analysis for drivers who completed multiple laps to determine how performance changes over increased number of laps
 
 To get the final dataset run the python file "run_pipeline" ensuring the required data in within the data folder, see `config.py`.
 
@@ -312,7 +317,7 @@ If you’d like to contribute:
 - Explore additional factors influencing lap time  
 - Generate new features from existing data  
 - Build simulations to test strategies  
-- Integrate external datasets  
+- Integrate external datasets
 
 ---
 
@@ -334,6 +339,7 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
 
 
 
