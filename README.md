@@ -32,7 +32,7 @@ Data sources include:
 
 #### 2.2.1. Final Data Product Description
 
-The final data product is a lap-level dataset, with each row representing a single lap attempted by a driver (~500–1000 rows total). Features summarise key aspects of lap execution (e.g. braking, throttle, steering, speed, and segment-based performance), aligned to track geometry and specific race segments. The dataset is designed to capture both overall lap characteristics and driver–track interactions, with the target variable being lap time.
+The final data product is a lap-level dataset, with each row representing a single lap attempted by a driver (~500–1000 rows total) with the `lap_id` feature being a concatenation of `SESSION_GUID` and the lap number. Features summarise key aspects of lap execution (e.g. braking, throttle, steering, speed, and segment-based performance), aligned to track geometry and specific race segments. The dataset is designed to capture both overall lap characteristics and driver–track interactions, with the target variable being lap time.
 
 - **Observations (rows):** one per lap, across all drivers (~500–1000 total)
 - **Features (columns):** engineered summaries of braking, throttle, steering, speed, and sector performance
@@ -339,6 +339,7 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
 
 
 
