@@ -237,9 +237,17 @@ For the throttle moments and extract key throttle-related moments from each lap,
 
 This was done by first sorting each lap by distance and restricting the analysis to a specified distance range (Near the turn). Differences in consecutive throttle values were then computed to detect lift-offs and reapplications, and the corresponding lap distances for minimum and maximum throttle points were recorded for each lap. (We used a threshold value of 0.02 to avoid noise).
 
-#### 3.6.5 Apex moments
+#### 3.6.5. Apex moments
 
 Each lap’s apex moments were determined by identifying the points closest to each of the two apexes. The lap distances at these points were then recorded as unique identifiers for their corresponding lap, serving as the reference for generating the complete moment dataset.
+
+### 3.6.6. Other notes
+
+We aimed to create a Velocity vs Tire Direction feature representing the difference between the vehicle’s velocity vector and tire direction. However, this was not feasible due to missing or null velocity vector data, preventing reliable construction of the feature.
+
+Some cells in the final dataset remain NaN, as certain laps lacked specific data such as braking or throttle inputs. These laps were retained since they still contain valuable information that can be leveraged in modelling. Any further handling of missing values can be efficiently performed during the modelling stage.
+
+Finally, invalid laps (where the car went off track) were also retained and marked with a dedicated flag to preserve potentially useful behavioural and contextual data.
 
 ### 3.7. Analysis and modelling (planned)  
 
@@ -249,7 +257,7 @@ Future work may focus on developing models that examine the impact of individual
 
 ---
 
-## 4. Project Status  
+## 4. Research 
 
 - Conducted literature review on driver behaviour, braking/throttle strategies, and racing simulations  
 - Identified limitations in existing studies such as the paper by Struthers called Formula One Telemetry Analysis<sup>(2)</sup> where research focused more on use of microprocessors in the Formula 1 simulator for data analysis and data structure construction for real time data graphs rather than analysis and modelling for improved lap performance.
@@ -319,6 +327,7 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
 
 
 
