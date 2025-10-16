@@ -270,8 +270,8 @@ Finally, invalid laps (where the car went off track) were also retained and mark
 
 ### 4.4. Next Steps  
 
-- Develop and test models for driver performance analysis  
-- Evaluate results and compare across drivers  
+Future work may focus on developing models that examine the impact of individual telemetry features on lap outcomes with the objective of isolating key performance indicators. These models could then be applied across drivers to depict variations in factors such as braking strategy, throttle application and racing lines. Following this analysis, a comprehensive evaluation of driving efficiency can be conducted to pinpoint the exact areas in which performance gains are realised.
+
 
 ---
 
@@ -333,6 +333,7 @@ For questions or suggestions, contact:
  2. Struthers, A. (2022). Formula One Telemetry Analysis, Central Washington University. Available at: <https://digitalcommons.cwu.edu/source/2022/COTS/99/>.
 
 ‌
+
 
 
 
